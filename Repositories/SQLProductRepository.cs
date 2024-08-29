@@ -20,11 +20,11 @@ namespace VirtualShoppingStore.Repositories
             this.virtualShoppingStoreDbContext = virtualShoppingStoreDbContext;
         }
 
-        public string AddNewProduct(Product product)
+        public Product AddNewProduct(Product product)
         {
             virtualShoppingStoreDbContext.Products.Add(product);
             virtualShoppingStoreDbContext.SaveChanges();
-            return "Successfull";
+            return product;
         }
 
 

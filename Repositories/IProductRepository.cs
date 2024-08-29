@@ -19,6 +19,6 @@ namespace VirtualShoppingStore.Repositories
         /// 
         /// </summary>
         /// <returns></returns>
-        String AddNewProduct(Product product);
+        Product AddNewProduct(Product product);
     }
 }

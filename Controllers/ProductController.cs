@@ -59,12 +59,12 @@ namespace VirtualShoppingStore.Controllers
 
 
         /// <summary>
-        /// 
+        /// Add Product
         /// </summary>
         /// <param name="addProductDto"></param>
         /// <returns></returns>
         [HttpPost]
-        public String AddNewProduct([FromBody]AddProductDto addProductDto)
+        public IActionResult AddNewProduct([FromBody]AddProductDto addProductDto)
         {
             Product product = new Product
             {
@@ -76,8 +76,19 @@ namespace VirtualShoppingStore.Controllers
                 IsDeleted= addProductDto.IsDeleted,
             };
 
-            var x = productRepository.AddNewProduct(product);
-            return "addeded";
+            var data = productRepository.AddNewProduct(product);
+
+            var addedproductdto = new AddProductDto()
+            {
+                CategoryId = product.CategoryId,
+                ProductName = product.ProductName,
+                Description = product.Description,
+                Price = product.Price,
+                StockQuantity = product.StockQuantity,
+                IsDeleted = product.IsDeleted,
+            };
+            return CreatedAtAction(nameof(GetAllProduct), addedproductdto);
+            
         }
     }
 }
