@@ -1,0 +1,6 @@
+@VirtualShoppingStore_HostAddress = http://localhost:5149
+
+GET {{VirtualShoppingStore_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
