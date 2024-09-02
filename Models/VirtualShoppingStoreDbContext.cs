@@ -30,7 +30,8 @@ public partial class VirtualShoppingStoreDbContext : DbContext
     public virtual DbSet<User> Users { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        => optionsBuilder.UseSqlServer("Server=ITT-VINEET-YA\\SQLEXPRESS; Database=VirtualShoppingStoreDb;Trusted_Connection=true;TrustServerCertificate=true;");
+#warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see https://go.microsoft.com/fwlink/?LinkId=723263.
+        => optionsBuilder.UseSqlServer("server= ITT-VINEET-YA\\SQLEXPRESS; database=VirtualShoppingStoreDb; Trusted_Connection=true; TrustServerCertificate=true;");
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

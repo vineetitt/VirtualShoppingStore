@@ -22,11 +22,24 @@ builder.Services.AddSwaggerGen( c=>
         c.IncludeXmlComments(xmlPath);
     });
 
+builder.Services.AddControllers()
+       .AddJsonOptions(options =>
+       {
+           options.JsonSerializerOptions.ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.IgnoreCycles;
+       });//
+
 builder.Services.AddDbContext<VirtualShoppingStoreDbContext>(options =>
 options.UseSqlServer(builder.Configuration.GetConnectionString("VirtualShoppingStoreDbConnectionString")));
 
 builder.Services.AddScoped<IUserRepository, SQLUserRepository>();
 builder.Services.AddScoped<IProductRepository, SQLProductRepository>();
+builder.Services.AddScoped<ICategoryRepository, SQLCategoryRepository>();
+builder.Services.AddScoped<IStatusRepository, SQLStatusRepository>();
+builder.Services.AddScoped<IOrderRepository, SQLOrderRepository>();
+builder.Services.AddScoped<IOrderItemRepository, SQLOrderItemRepository>();
+builder.Services.AddScoped<ICartItemRepository, SQLCartItemRepository>();
+
+
 
 var app = builder.Build();
 

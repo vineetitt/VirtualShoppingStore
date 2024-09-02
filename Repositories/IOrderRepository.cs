@@ -1,40 +1,19 @@
 ﻿using VirtualShoppingStore.Models;
-using VirtualShoppingStore.Models.DTO.UserDto;
+using VirtualShoppingStore.Models.DTO.OrderDto;
 
 namespace VirtualShoppingStore.Repositories
 {
+
     /// <summary>
     /// 
     /// </summary>
-    public interface IUserRepository
+    public interface IOrderRepository
     {
         /// <summary>
         /// 
         /// </summary>
         /// <returns></returns>
-        /// 
-        List<User> GetAllUser();
-
-
-
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="id"></param>
-        /// <returns></returns>
-        /// 
-        User GetusersbyId(int id);
-
-
-
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="user"></param>
-        /// <returns></returns>
-        void AddUser(User user);
+        public List<Order> GetOrders();
 
 
 
@@ -43,8 +22,16 @@ namespace VirtualShoppingStore.Repositories
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        void DeleteUserById(int id);
+        public Order ShowOrderById(int id);
 
+
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="addOrderDto"></param>
+
+        public Order AddOrder(AddOrderDto addOrderDto);
 
 
 
@@ -52,10 +39,24 @@ namespace VirtualShoppingStore.Repositories
         /// 
         /// </summary>
         /// <param name="id"></param>
-        /// <param name="updateUserRequestDto"></param>
-        /// <returns></returns>
-        public User UpdateUserByPatch(int id, UpdateUserRequestDto updateUserRequestDto);
+        public void DeleteOrder(int id);
+
+
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="orderId"></param>
+        /// <param name="patchOrderDto"></param>
+        public void PatchOrder(int orderId, PatchOrderDto patchOrderDto);
+
+
+
+       
+
+
     }
 
 
+    
 }

@@ -1,6 +1,10 @@
 ﻿using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Identity.Client;
+using Microsoft.IdentityModel.Tokens;
 using VirtualShoppingStore.Models;
+using VirtualShoppingStore.Models.DTO.UserDto;
 
 namespace VirtualShoppingStore.Repositories
 {
@@ -20,64 +24,115 @@ namespace VirtualShoppingStore.Repositories
         }
 
 
-
-
-
-        public async Task<User> AddUserAsync(User user)
+        /// <summary>
+        /// Get all User
+        /// </summary>
+        /// <returns></returns>
+        /// <exception cref="NotImplementedException"></exception>
+        public List<User> GetAllUser()
         {
-             await virtualShoppingStoreDbContext.Users.AddAsync(user);  
-            await virtualShoppingStoreDbContext.SaveChangesAsync(); 
-            return user;
-        }
+            var allUserData = virtualShoppingStoreDbContext.Users.Where(e => e.Deactive == false).ToList();
 
-        public async Task<User?> DeleteUserByIdAsync(int id)
-        {
-            var existingUser= await virtualShoppingStoreDbContext.Users.FirstOrDefaultAsync(x=>x.UserId==id);
-            if (existingUser == null) {
-                return null;
+
+            if (!allUserData.Any())
+            {
+                throw new Exception("No Users found");
             }
 
-             virtualShoppingStoreDbContext.Users.Remove(existingUser);
-             await virtualShoppingStoreDbContext.SaveChangesAsync();
-            return existingUser;
+            return allUserData;
+
         }
+
+        /// <summary>
+        /// Get User By id
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        public User GetusersbyId(int id)
+        {
+            var users = virtualShoppingStoreDbContext.Users.FirstOrDefault(a=>a.Deactive == false && a.UserId == id);
+            if (users==null) {
+                throw new Exception("No Users found");
+            }
+            return users;
+        }
+
+        /// <summary>
+        /// Add User
+        /// </summary>
+        /// <param name="user"></param>
+        /// <returns></returns>
+        public void AddUser(User user)
+        {
+            var exisitingUser = virtualShoppingStoreDbContext.Users.FirstOrDefault(a=>a.Email == user.Email || a.Username == user.Username);
+            if (exisitingUser==null)
+            {
+
+                virtualShoppingStoreDbContext.Users.Add(user);
+                virtualShoppingStoreDbContext.SaveChanges();
+            }
+            else
+            {
+                if (exisitingUser.Deactive==true){
+                    exisitingUser.Deactive = false;
+                    virtualShoppingStoreDbContext.SaveChanges();
+                }
+                else
+                {
+                    throw new Exception("User with this email or username already exists");
+                }
+                
+            }
+        }
+
+        
+
+        /// <summary>
+        /// Delete User by Id
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        public void DeleteUserById(int id)
+        {
+            var existingUser = GetusersbyId(id);
+            existingUser.Deactive = true;
+            virtualShoppingStoreDbContext.SaveChanges();
+        }
+
 
 
 
         /// <summary>
         /// 
         /// </summary>
+        /// <param name="id"></param>
+        /// <param name="updateUserRequestDto"></param>
         /// <returns></returns>
-        /// <exception cref="NotImplementedException"></exception>
-        public async Task<List<User>> GetAllUserAsync()
+        /// <exception cref="Exception"></exception>
+       
+        public User UpdateUserByPatch(int id, UpdateUserRequestDto updateUserRequestDto )
         {
-            
-            return await virtualShoppingStoreDbContext.Users.Where(e => e.Deactive == false).ToListAsync();
-        }
 
-        public async Task<User?> getusersbyIdAsync(int id)
-        {
-            return await virtualShoppingStoreDbContext.Users.FirstOrDefaultAsync(x=>x.UserId == id);
-        }
+            var existinguser = virtualShoppingStoreDbContext.Users.Find(id);
 
-
-        public async Task<User?> UpdateUserDetailAsync(int id, User user)
-        {
-            var existingUser =await virtualShoppingStoreDbContext.Users.FirstOrDefaultAsync(x => x.UserId == id);
-            if (existingUser == null) {
-                return null;
+            if (existinguser == null)
+            {
+                throw new Exception("No existing user found with this id");
             }
-            existingUser.UserId = id;
-            existingUser.PhoneNo = user.PhoneNo;
-            existingUser.Email = user.Email;
-            existingUser.City = user.City;
-            existingUser.Address = user.Address;
-            existingUser.Username = user.Username;
-            existingUser.FirstName = user.FirstName;
-            existingUser.LastName = user.LastName;
 
-            await virtualShoppingStoreDbContext.SaveChangesAsync();
-            return existingUser;
+            existinguser.Username= updateUserRequestDto.Username?? existinguser.Username;
+            existinguser.FirstName= updateUserRequestDto.FirstName??existinguser.FirstName;
+            existinguser.LastName = updateUserRequestDto.LastName ?? existinguser.LastName;
+            existinguser.Email = updateUserRequestDto.Email ?? existinguser.Email;
+            existinguser.City = updateUserRequestDto.City ?? existinguser.City;
+            existinguser.Address = updateUserRequestDto.Address ?? existinguser.Address;
+            existinguser.PasswordHash = updateUserRequestDto.PasswordHash ?? existinguser.PasswordHash;
+            existinguser.PhoneNo=updateUserRequestDto.PhoneNo ?? existinguser.PhoneNo;
+
+           
+            virtualShoppingStoreDbContext.SaveChanges();
+            return existinguser;
+
         }
     }
 }

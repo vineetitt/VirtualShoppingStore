@@ -1,54 +1,56 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using VirtualShoppingStore.Models;
-using VirtualShoppingStore.Models.DTO.ProductDto;
+using VirtualShoppingStore.Models.DTO.CategoryDto;
 
 namespace VirtualShoppingStore.Repositories
 {
     /// <summary>
     /// 
     /// </summary>
-    public interface IProductRepository
+    public interface ICategoryRepository
     {
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <returns></returns>
-        List<Product> GetAllProduct();
 
 
         /// <summary>
         /// 
         /// </summary>
         /// <returns></returns>
-        void AddNewProduct(AddProductDto addProductDto);
-
-
-        /// <summary>
-        /// Delete Product By Id
-        /// </summary>
-        /// <param name="id"></param>
-        /// <returns></returns>
-        public string DeleteProductById(int id);
-
+        public List<Category> GetAllCategory();
 
 
         /// <summary>
         /// 
         /// </summary>
         /// <param name="id"></param>
-        /// <param name="patchProductDto"></param>
         /// <returns></returns>
-        public Product UpdateProductByid(int id, PatchProductDto patchProductDto );
+        public Category GetCategoryById(int id);
 
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        public void DeleteCategoryById(int id);
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="categoryName"></param>
+        /// <returns></returns>
+        public void AddCategory(string categoryName);
 
 
 
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="productId"></param>
+        /// <param name="categoryId"></param>
+        /// <param name="updateCategoryDto"></param>
         /// <returns></returns>
-        public Product GetProductById(int productId);
+        public void UpdateCategoryByCategoryId(int categoryId, UpdateCategoryDto updateCategoryDto);
+
     }
+
+
 }

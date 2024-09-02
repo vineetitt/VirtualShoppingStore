@@ -64,31 +64,88 @@ namespace VirtualShoppingStore.Controllers
         /// <param name="addProductDto"></param>
         /// <returns></returns>
         [HttpPost]
-        public IActionResult AddNewProduct([FromBody]AddProductDto addProductDto)
+        public IActionResult AddNewProduct([FromBody] AddProductDto addProductDto)
         {
-            Product product = new Product
-            {
-                ProductName= addProductDto.ProductName,
-                Description= addProductDto.Description,
-                Price = addProductDto.Price,
-                StockQuantity = addProductDto.StockQuantity,
-                CategoryId = addProductDto.CategoryId,
-                IsDeleted= addProductDto.IsDeleted,
-            };
 
-            var data = productRepository.AddNewProduct(product);
-
-            var addedproductdto = new AddProductDto()
+            try
             {
-                CategoryId = product.CategoryId,
-                ProductName = product.ProductName,
-                Description = product.Description,
-                Price = product.Price,
-                StockQuantity = product.StockQuantity,
-                IsDeleted = product.IsDeleted,
-            };
-            return CreatedAtAction(nameof(GetAllProduct), addedproductdto);
+                productRepository.AddNewProduct(addProductDto);
+                return Ok();
+            }
+            catch (Exception ex) { 
+                return BadRequest(ex.Message);
+            }
+        }
+
+
+
+
+        /// <summary>
+        /// Delete Product By Id
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        [HttpDelete]
+        [Route("{id}")]
+        public IActionResult DeleteProductById(int id)
+        {
+            var isdeleted = productRepository.DeleteProductById(id);
+
+            if (isdeleted == null)
+            {
+                return NotFound($"Product with ID {id} not found.");
+            }
+            return NoContent();
             
         }
+
+
+
+        /// <summary>
+        /// Update Product By id
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="patchProductDto"></param>
+        /// <returns></returns>
+        [HttpPatch]
+        [Route("{id}")]
+        public IActionResult UpdateProductByid(int id, PatchProductDto patchProductDto )
+        {
+           
+            try
+            {
+                var response = productRepository.UpdateProductByid(id, patchProductDto);
+                return Ok(response);
+            }
+            catch (Exception ex) { 
+                return BadRequest(ex.Message);
+            }
+            
+        }
+
+
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="productId"></param>
+        /// <returns></returns>
+        /// <exception cref="Exception"></exception>
+
+        [HttpGet]
+        [Route("{productId}")]
+        public IActionResult GetProductById(int productId)
+        {
+            try
+            {
+                var product = productRepository.GetProductById(productId);
+                return Ok(product); 
+            }
+            catch (Exception ex) { 
+                throw new Exception(ex.Message);    
+            }
+            
+        }
+
     }
 }
