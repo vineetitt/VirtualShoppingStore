@@ -3,19 +3,17 @@
 namespace VirtualShoppingStore.Repositories
 {
     /// <summary>
-    /// 
+    /// StatusRepository class
     /// </summary>
-    public class SQLStatusRepository : IStatusRepository
+    public class StatusRepository : IStatusRepository
     {
         private readonly VirtualShoppingStoreDbContext virtualShoppingStoreDbContext;
-
-
 
         /// <summary>
         /// 
         /// </summary>
         /// <param name="virtualShoppingStoreDbContext"></param>
-        public SQLStatusRepository(VirtualShoppingStoreDbContext virtualShoppingStoreDbContext)
+        public StatusRepository(VirtualShoppingStoreDbContext virtualShoppingStoreDbContext)
         {
             this.virtualShoppingStoreDbContext = virtualShoppingStoreDbContext;
         }
@@ -37,7 +35,6 @@ namespace VirtualShoppingStore.Repositories
 
         }
 
-
         /// <summary>
         /// Get status by id
         /// </summary>
@@ -56,21 +53,19 @@ namespace VirtualShoppingStore.Repositories
                 return found;
             }
 
-            throw new Exception($"Status with ID {id} not found");
+            throw new CustomException($"Status with ID {id} not found",400);
         }
-
-
-
 
         /// <summary>
         /// add status
         /// </summary>
         /// <exception cref="NotImplementedException"></exception>
+        
         public void AddStatus(string statusname)
         {
             var statusdomain = virtualShoppingStoreDbContext.Statuses.Where(x => x.StatusName == statusname);
             if (statusdomain.Any()) {
-                throw new Exception("Status name already exists");
+                throw new CustomException("Status name already exists",400);
             }
 
             var x = new Status()
@@ -80,41 +75,30 @@ namespace VirtualShoppingStore.Repositories
 
             virtualShoppingStoreDbContext.Add(x);
             virtualShoppingStoreDbContext.SaveChanges();
-            
-
            
         }
 
-
-
-
         /// <summary>
-        /// delete
+        /// delete status
         /// </summary>
         /// <exception cref="NotImplementedException"></exception>
-        public void DeleteStatus(string statusname)
+        public void DeleteStatus(int statusId)
         {
-            var status = virtualShoppingStoreDbContext.Statuses.FirstOrDefault(y => y.StatusName == statusname)?? throw new Exception("SUCH STATUS NAME DOES NOT EXIST"); ;
+            var status = virtualShoppingStoreDbContext.Statuses.FirstOrDefault(y => y.StatusId == statusId) ?? throw new Exception("Invalid StatusId"); 
 
-            
-            //if (status == null)
-            //{
-            //    throw new Exception("SUCH STATUS NAME DOES NOT EXIST");
-            //}
+            if (status == null)
+            {
+                throw new CustomException("SUCH STATUS NAME DOES NOT EXIST",400);
+            }
 
-            
             virtualShoppingStoreDbContext.Statuses.Remove(status);
 
-            
             virtualShoppingStoreDbContext.SaveChanges();
 
         }
 
-
-
-
         /// <summary>
-        /// 
+        /// UpdateStatus
         /// </summary>
         /// <param name="id"></param>
         /// /// <param name="statusname"></param>
@@ -122,15 +106,15 @@ namespace VirtualShoppingStore.Repositories
         /// <exception cref="NotImplementedException"></exception>
         public Status UpdateStatus(int id, string statusname)
         {
-            //throw new NotImplementedException();
 
-
-            var isfound = virtualShoppingStoreDbContext.Statuses.FirstOrDefault(x => x.StatusId == id) ?? throw new Exception("Invalid StatusID");
+            var isfound = virtualShoppingStoreDbContext.Statuses.FirstOrDefault(x => x.StatusId == id) ?? throw new CustomException("Invalid StatusID",400);
             
             isfound.StatusName= statusname;
 
             virtualShoppingStoreDbContext.SaveChanges();
             return isfound;
         }
+
     }
+
 }

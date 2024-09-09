@@ -4,7 +4,7 @@ namespace VirtualShoppingStore.Models.DTO.OrderDto
     /// <summary>
     /// 
     /// </summary>
-    public class PatchOrderDto
+    public class UpdateOrderDto
     {
         /// <summary>
         /// 
@@ -18,6 +18,6 @@ namespace VirtualShoppingStore.Models.DTO.OrderDto
         /// <summary>
         /// 
         /// </summary>
-        public List<PatchOrderItemDto> Orderitems { get; set; }
+        public List<UpdateOrderItemDto> Orderitems { get; set; }
     }
 }

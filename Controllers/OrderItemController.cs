@@ -6,53 +6,62 @@ using VirtualShoppingStore.Models.DTO.OrderItemDto;
 namespace VirtualShoppingStore.Controllers
 {
 
-
     /// <summary>
     /// 
     /// </summary>
+
     [Route("api/[controller]")]
     [ApiController]
+
     public class OrderItemController : ControllerBase
     {
+
         private readonly IOrderItemRepository orderItemRepository;
 
         /// <summary>
         /// 
         /// </summary>
         /// <param name="orderItemRepository"></param>
+
         public OrderItemController(IOrderItemRepository orderItemRepository)
         {
             this.orderItemRepository = orderItemRepository;
         }
-
-
 
         /// <summary>
         /// Get Order Item by id
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
+        
         [HttpGet]
         [Route("{id}")]
+
         public IActionResult GetOrderitemsByOrderId(int id)
         {
             try
             {
                 var data = orderItemRepository.GetOrderitemsByOrderId(id);
-                if (!data.Any())
+                if (data == null || !data.Any())
                 {
-                    throw new Exception("No order items found");
+                    return NotFound($"No order items found for order ID {id}.");
                 }
+
                 return Ok(data);
+
             }
-            catch (Exception ex) { 
-                return BadRequest(ex.Message);
+
+            catch (CustomException ex)
+            {
+                return StatusCode(ex.StatusCode, ex.Message);
             }
-            
+
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"An error occurred: {ex.Message}");
+            }
+
         }
-
-
-
 
         /// <summary>
         /// Add order Item
@@ -61,15 +70,22 @@ namespace VirtualShoppingStore.Controllers
         /// <returns></returns>
         [HttpPost]
 
-        public IActionResult AddOrderitem(AddOrderItemDto addOrderItemDto )
+        public IActionResult AddOrderitem(AddOrderItemDto addOrderItemDto)
         {
             try
             {
-                 orderItemRepository.AddOrderitem(addOrderItemDto);
-                 return Ok();
+                orderItemRepository.AddOrderitem(addOrderItemDto);
+                return Ok();
             }
-            catch (Exception ex) {
-                return BadRequest(ex.Message);
+
+            catch (CustomException ex)
+            {
+                return StatusCode(ex.StatusCode, ex.Message);
+            }
+
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"An error occurred: {ex.Message}");
             }
         }
 
@@ -84,17 +100,24 @@ namespace VirtualShoppingStore.Controllers
         /// <returns></returns>
         [HttpPatch]
         [Route("{id}")]
-        public IActionResult UpdateOrderitem(int id, PatchOrderItemDto updateOrderItem)
+        public IActionResult UpdateOrderitem(int id, UpdateOrderItemDto updateOrderItem)
         {
             try
             {
-                var updatedorderitem =orderItemRepository.UpdateOrderItem(id, updateOrderItem);
+                var updatedorderitem = orderItemRepository.UpdateOrderItem(id, updateOrderItem);
                 return Ok(updatedorderitem);
             }
-            catch (Exception ex) {
-                return BadRequest(ex.Message);
+
+            catch (CustomException ex)
+            {
+                return StatusCode(ex.StatusCode, ex.Message);
             }
-           
+
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"An error occurred: {ex.Message}");
+            }
+
 
         }
 
@@ -114,11 +137,17 @@ namespace VirtualShoppingStore.Controllers
                 orderItemRepository.DeleteOrderitem(id);
                 return Ok();
             }
-            catch(Exception ex) 
+
+            catch (CustomException ex)
             {
-                return BadRequest(ex.Message);  
+                return StatusCode(ex.StatusCode, ex.Message);
             }
-            
+
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"An error occurred: {ex.Message}");
+            }
+
         }
 
 
@@ -135,10 +164,16 @@ namespace VirtualShoppingStore.Controllers
                 var orderitems = orderItemRepository.ShowAllOrderItem();
                 return Ok(orderitems);
             }
-            catch(Exception ex) 
-                {
-                    return BadRequest(ex.Message);
-                }
+
+            catch (CustomException ex)
+            {
+                return StatusCode(ex.StatusCode, ex.Message);
+            }
+
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"An error occurred: {ex.Message}");
+            }
         }
     }
 }

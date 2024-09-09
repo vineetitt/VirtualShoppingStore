@@ -2,22 +2,18 @@
 
 namespace VirtualShoppingStore.Repositories
 {
+
     /// <summary>
     /// 
     /// </summary>
     public interface IStatusRepository
     {
 
-
         /// <summary>
         /// GetAllStatus
         /// </summary>
         /// <returns></returns>
         public List<Status> GetAllStatus();
-
-
-
-
 
         /// <summary>
         /// GetStatusById
@@ -26,27 +22,16 @@ namespace VirtualShoppingStore.Repositories
         /// <returns></returns>
         public Status GetStatusById(int id);
 
-
-
-
         /// <summary>
         /// AddStatus
         /// </summary>
         /// <param name="statusName"></param>
         public void AddStatus(string statusName);
 
-
-
-
-
-
         /// <summary>
         /// DeleteStatus
         /// </summary>
-        public void DeleteStatus(string statusname);
-
-
-
+        public void DeleteStatus(int statusId);
 
         /// <summary>
         /// UpdateStatus
@@ -55,5 +40,7 @@ namespace VirtualShoppingStore.Repositories
         /// <param name="statusname"></param>
         /// <returns></returns>
         public Status UpdateStatus(int id, string statusname);
+
     }
+
 }

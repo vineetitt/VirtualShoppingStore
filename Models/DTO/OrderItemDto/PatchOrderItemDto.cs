@@ -1,19 +1,25 @@
-﻿namespace VirtualShoppingStore.Models.DTO.OrderItemDto
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace VirtualShoppingStore.Models.DTO.OrderItemDto
 {
     /// <summary>
     /// 
     /// </summary>
-    public class PatchOrderItemDto
+    public class UpdateOrderItemDto
     {
-         /// <summary>
+        /// <summary>
         /// 
         /// </summary>
+
+        [Range(1, int.MaxValue, ErrorMessage = "Quantity must be greater than zero.")]
         public int ?Quantity { get; set; }
 
 
         /// <summary>
         /// 
         /// </summary>
+        
+        [Range(0.01, double.MaxValue, ErrorMessage = "Price must be greater than zero.")]
         public decimal ?Price { get; set; }
 
 

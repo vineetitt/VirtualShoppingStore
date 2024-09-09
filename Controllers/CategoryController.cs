@@ -10,85 +10,111 @@ using VirtualShoppingStore.Repositories;
 namespace VirtualShoppingStore.Controllers
 {
     /// <summary>
-    /// 
+    /// Category Controller
     /// </summary>
+    
     [Route("api/[controller]")]
+
     [ApiController]
 
-    
     public class CategoryController : ControllerBase
     {
         private readonly ICategoryRepository categoryRepository;
 
         /// <summary>
-        /// 
+        /// CategoryController class
         /// </summary>
         /// <param name="categoryRepository"></param>
+
         public CategoryController(ICategoryRepository categoryRepository)
         {
             this.categoryRepository = categoryRepository;
         }
 
-
         /// <summary>
-        /// GetAllCategory
+        /// GetAllCategories
         /// </summary>
         /// <returns></returns>
+        
         [HttpGet]
 
-        public IActionResult GetAllCategory() { 
-
-            var data= categoryRepository.GetAllCategory();
-
-            var responseCategoryDto = new List<ResponseCategoryDto>();
-
-
-            foreach (var item in data)
+        public IActionResult GetAllCategories()
+        {
+            try
             {
-                responseCategoryDto.Add(new ResponseCategoryDto()
+                var data = categoryRepository.GetAllCategories();
+
+                var responseCategoryDto = new List<ResponseCategoryDto>();
+
+                foreach (var item in data)
                 {
-                    CategoryId = item.CategoryId,
-                    CategoryName = item.CategoryName,
-                });
+
+                    responseCategoryDto.Add(new ResponseCategoryDto()
+                    {
+                        CategoryId = item.CategoryId,
+                        CategoryName = item.CategoryName,
+                    });
+
+                }
+
+                return Ok(responseCategoryDto);
             }
-            return Ok(responseCategoryDto);
+            
+            catch(CustomException ex)
+            {
+                return StatusCode(ex.StatusCode, ex.Message);
+            }
+
+            catch (Exception ex) 
+            {
+                return StatusCode(500,$"An unexpected error occurred: {ex.Message}");
+            }
 
         }
 
-
-
         /// <summary>
-        /// GetCategoryById
+        /// Get Category By Id
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
+ 
         [HttpGet]
 
         [Route("{id}")]
 
-
         public IActionResult GetCategoryById(int id) {
-            var data =  categoryRepository.GetCategoryById(id);
-            if (data == null)
+            try
             {
-                return NotFound();
+                var data = categoryRepository.GetCategoryById(id);
+                ResponseCategoryDto responseCategoryDto = new ResponseCategoryDto()
+                {
+                    CategoryId = data.CategoryId,
+                    CategoryName = data.CategoryName,
+                };
+                return Ok(responseCategoryDto);
             }
 
-            ResponseCategoryDto responseCategoryDto = new ResponseCategoryDto()
+            catch(CustomException ex)
             {
-                CategoryId = data.CategoryId,
-                CategoryName = data.CategoryName,
-            };
+                return StatusCode(ex.StatusCode, ex.Message);
+            }
 
-           return Ok(responseCategoryDto);
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"An unexpected error occurred: {ex.Message}");
+            }
+
         }
 
         /// <summary>
-        /// DeleteCategory
+        /// Delete Category
         /// </summary>
         /// <returns></returns>
+        
         [HttpDelete]
+
         [Route("{id}")]
+
         public IActionResult DeleteCategoryById(int id)
         {
             try
@@ -96,8 +122,15 @@ namespace VirtualShoppingStore.Controllers
                 categoryRepository.DeleteCategoryById(id);
                 return Ok();
             }
-            catch (Exception ex) { 
-                return BadRequest(ex.Message);
+
+            catch(CustomException ex)
+            {
+                return StatusCode(ex.StatusCode, ex.Message);
+            }
+
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"An unexpected error occurred: {ex.Message}");
             }
 
         }
@@ -107,47 +140,62 @@ namespace VirtualShoppingStore.Controllers
         /// </summary>
         /// <param name="categoryname"></param>
         /// <returns></returns>
+        
         [HttpPost]
-        //[Route("{id}")]
-
+        
         public IActionResult AddCategory(string categoryname)
         {
+
             try
             {
                 categoryRepository.AddCategory(categoryname);
                 return Ok();    
             }
-            catch (Exception ex) {
-                return BadRequest(ex.Message);
+
+            catch (CustomException ex)
+            {
+                return StatusCode(ex.StatusCode, ex.Message);
             }
+
+            catch (Exception ex) {
+                return StatusCode(500, $"An unexpected error occurred: {ex.Message}");
+            }
+
         }
 
-
-
-
         /// <summary>
-        /// 
+        /// UpdateCategory by categoryId
         /// </summary>
         /// <param name="categoryId"></param>
         /// <param name="updateCategoryDto"></param>
         /// <returns></returns>
         /// <exception cref="Exception"></exception>
+
         [HttpPatch]
+
         [Route("{categoryId}")]
 
-        public IActionResult UpdateCategoryByCategoryId(int categoryId, UpdateCategoryDto updateCategoryDto)
+        public IActionResult UpdateCategory(int categoryId, UpdateCategoryDto updateCategoryDto)
         {
+
             try
             {
-                categoryRepository.UpdateCategoryByCategoryId(categoryId, updateCategoryDto);
+                categoryRepository.UpdateCategory(categoryId, updateCategoryDto);
                 return Ok();
             }
+
+            catch (CustomException ex)
+            {
+                return StatusCode(ex.StatusCode, ex.Message);
+            }
+
             catch (Exception ex)
             {
-                return BadRequest(ex.Message);
+                return StatusCode(500, $"An unexpected error occurred: {ex.Message}");
             }
 
         }
 
     }
+
 }

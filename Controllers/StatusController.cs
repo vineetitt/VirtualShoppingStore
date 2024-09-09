@@ -36,15 +36,31 @@ namespace VirtualShoppingStore.Controllers
             try
             {
                 var statusdata = statusRepository.GetAllStatus();
-                return Ok(statusdata); 
+                var statuslist= new List<ResponseStatusDto>();
+
+                foreach (var status in statusdata) {
+                    statuslist.Add(new ResponseStatusDto()
+                    {
+                        StatusId = status.StatusId,
+                        StatusName = status.StatusName,
+                    });
+
+                }
+
+                return Ok(statuslist); 
             }
+
+            catch (CustomException ex)
+            {
+                return StatusCode(ex.StatusCode, ex.Message);
+            }
+
             catch (Exception ex) { 
                 return Ok(ex.Message);
 
             }
 
         }
-
 
         /// <summary>
         /// Get status by id
@@ -60,13 +76,16 @@ namespace VirtualShoppingStore.Controllers
                 var getdata = statusRepository.GetStatusById(id);
                 return Ok(getdata);
             }
-            catch(Exception ex) { 
+
+            catch (CustomException ex)
+            {
+                return StatusCode(ex.StatusCode, ex.Message);
+            }
+
+            catch (Exception ex) { 
                 return BadRequest(ex.Message);
             }
         }
-
-
-
 
         /// <summary>
         /// ADD status
@@ -82,37 +101,44 @@ namespace VirtualShoppingStore.Controllers
                 return Ok("Succesfully Added");
             }
 
+            catch (CustomException ex)
+            {
+                return StatusCode(ex.StatusCode, ex.Message);
+            }
+
             catch (Exception ex) { 
                 return BadRequest(ex.Message);
             }
         }
 
-
-
-
-
         /// <summary>
-        /// Delete Status
+        /// Delete Status by status Id
         /// </summary>
-        /// <param name="statusname"></param>
+        /// <param name="statusId"></param>
         /// <returns></returns>
-        [HttpDelete]
 
-        public IActionResult DeleteStatus(string statusname)
+        [HttpDelete]
+        [Route("{statusId:int}")]
+
+        public IActionResult DeleteStatus(int statusId)
         {
             try
             {
-                statusRepository.DeleteStatus(statusname);
+                statusRepository.DeleteStatus(statusId);
                 
                 return Ok();
 
             }
+
+            catch (CustomException ex)
+            {
+                return StatusCode(ex.StatusCode, ex.Message);
+            }
+
             catch (Exception ex) {
                 return BadRequest(ex.Message);
             }
         }
-
-
 
         /// <summary>
         /// Update Status Name
@@ -128,13 +154,18 @@ namespace VirtualShoppingStore.Controllers
                 var newstatusname = statusRepository.UpdateStatus(id, statusname);
                 return Ok(newstatusname);
             }
+
+            catch (CustomException ex)
+            {
+                return StatusCode(ex.StatusCode, ex.Message);
+            }
+
             catch (Exception ex)
             {
                 return BadRequest(ex.Message);
             }
 
         }
-
 
     }
 }

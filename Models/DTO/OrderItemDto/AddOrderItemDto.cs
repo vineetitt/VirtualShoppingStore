@@ -22,6 +22,7 @@
         /// <summary>
         /// 
         ///
+
         public int Quantity { get; set; }
 
 

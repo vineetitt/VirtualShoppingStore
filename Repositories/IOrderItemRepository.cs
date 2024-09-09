@@ -10,6 +10,7 @@ namespace VirtualShoppingStore.Repositories
     /// </summary>
     public interface IOrderItemRepository
     {
+
         /// <summary>
         /// 
         /// </summary>
@@ -17,24 +18,18 @@ namespace VirtualShoppingStore.Repositories
         /// <returns></returns>
         public List<Orderitem> GetOrderitemsByOrderId(int id);
 
-
-
         /// <summary>
         /// 
         /// </summary>
         /// <param name="addOrderItemDto"></param>
         public void AddOrderitem(AddOrderItemDto addOrderItemDto);
 
-
-
         /// <summary>
         /// UpdateOrderItem
         /// </summary>
         /// <param name="id"></param>
         /// <param name="updateOrderItem"></param>
-        public Orderitem UpdateOrderItem(int id,PatchOrderItemDto updateOrderItem );
-
-
+        public Orderitem UpdateOrderItem(int id,UpdateOrderItemDto updateOrderItem );
 
         /// <summary>
         /// 
@@ -42,9 +37,13 @@ namespace VirtualShoppingStore.Repositories
         /// <param name="id"></param>
         public void DeleteOrderitem(int id);
 
-
-
+        /// <summary>
+        /// ShowAllOrderItem
+        /// </summary>
+        /// <returns></returns>
+        
         public List<Orderitem> ShowAllOrderItem();
         
     }
+
 }

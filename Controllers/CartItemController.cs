@@ -12,11 +12,10 @@ namespace VirtualShoppingStore.Controllers
     /// </summary>
     [Route("api/[controller]")]
     [ApiController]
+
     public class CartItemController : ControllerBase
     {
         private readonly ICartItemRepository cartItemRepository;
-
-
 
         /// <summary>
         /// 
@@ -27,78 +26,98 @@ namespace VirtualShoppingStore.Controllers
             this.cartItemRepository = cartItemRepository;
         }
 
+        ///// <summary>
+        ///// Get All Cart 
+        ///// </summary>
+        ///// <returns></returns>
 
+        //[HttpGet]
+
+        //public IActionResult GetAllCartItems()
+        //{
+
+        //    try
+        //    {
+        //        var allcartitems = cartItemRepository.GetAllCartItems();
+        //        return Ok(allcartitems);
+        //    }
+        //    catch (CustomException ex)
+        //    {
+
+        //        return StatusCode(ex.StatusCode, ex.Message);
+        //    }
+
+        //    catch (Exception ex)
+        //    {
+        //        return StatusCode(500, $"An unexpected error occurred: {ex.Message}");
+        //    }
+
+        //}
 
         /// <summary>
-        /// Get All Users CartItems
-        /// </summary>
-        /// <returns></returns>
-        [HttpGet]
-
-        public IActionResult GetAllUsersCartItems()
-        {
-            try
-            {
-                var allcartitems = cartItemRepository.GetAllUsersCartItems();
-                return Ok(allcartitems);
-            }
-            catch (Exception ex)
-            {
-                {
-                    return BadRequest(ex.Message);
-                }
-
-            }
-        }
-
-
-        /// <summary>
-        /// Get Cart Item By User id
+        /// Get non placed CartItem By User id
         /// </summary>
         /// <param name="userId"></param>
         /// <returns></returns>
+        
         [HttpGet]
+
         [Route("{userId}")]
-        public IActionResult GetCartItemsByUserId(int userId)
+
+        public IActionResult GetCartByUserId(int userId)
         {
+
             try
             {
-                var cartitem = cartItemRepository.GetCartItemsByUserId(userId);
+                var cartitem = cartItemRepository.GetCartByUserId(userId);
                 return Ok(cartitem);
+
             }
-            catch (Exception ex) 
+
+            catch (CustomException ex) 
             {
-                return BadRequest(ex.Message);
-            }        
+                return StatusCode(ex.StatusCode, ex.Message);
+            }
+
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"An error occurred: {ex.Message}");
+            }
+
         }
 
-
-
         /// <summary>
-        /// Add to cart By user id
+        /// Add product to cart By user id 
         /// </summary>
         /// <param name="addToCartDto"></param>
         /// <returns></returns>
         /// <exception cref="Exception"></exception>
+        
         [HttpPost]
 
-        public IActionResult AddItemToCart(AddToCartDto addToCartDto)
+        public IActionResult AddToCart(AddToCartDto addToCartDto)
         {
+
             try
             {
-                cartItemRepository.AddItemToCart(addToCartDto);
+                cartItemRepository.AddToCart(addToCartDto);
                 return Ok("Added");
             }
+
+            catch(CustomException ex)
+            {
+                return StatusCode(ex.StatusCode, ex.Message);
+            }
+
             catch (Exception ex) 
             {
-                throw new Exception(ex.Message);
+                return StatusCode(500, $"An unexpected error occurred: {ex.Message}");
             }
             
         }
 
-
         /// <summary>
-        /// Decrease quantity by cartitem id
+        /// Delete From Cart By CartItemId
         /// </summary>
         /// <param name="cartitemId"></param>
         /// <returns></returns>
@@ -106,41 +125,57 @@ namespace VirtualShoppingStore.Controllers
 
         [HttpDelete]
 
-        public IActionResult DeleteProductQuantityFromCartByCartItemId(int cartitemId)
+        public IActionResult DeleteFromCart(int cartitemId)
         {
             try
             {
-                cartItemRepository.DeleteProductQuantityFromCartByCartItemId(cartitemId);
+                cartItemRepository.DeleteFromCart(cartitemId);
                 return Ok();
             }
+
+            catch (CustomException ex)
+            {
+                return StatusCode(ex.StatusCode, ex.Message);
+            }
+
             catch (Exception ex)
+            {
+                return StatusCode(500 ,$"An unexpected error occurred: {ex.Message}");
+            }
+
+        }
+
+        /// <summary>
+        /// Update CartItem Quantity by cartitemId
+        /// </summary>
+        /// <param name="CartItemId"></param>
+        /// <param name="updateCartDto"></param>
+        /// <returns></returns>
+        /// <exception cref="Exception"></exception>
+        
+        [HttpPatch]
+        [Route("{CartItemId:int}")]
+
+        public IActionResult UpdateCart(int CartItemId, UpdateCartDto updateCartDto)
+        {
+
+            try
+            {
+                var updatedcart = cartItemRepository.UpdateCart(CartItemId, updateCartDto);
+                return Ok(updatedcart);
+            }
+
+            catch (CustomException ex) 
+            {
+                throw new Exception(ex.Message);
+            }
+
+            catch(Exception ex)
             {
                 throw new Exception(ex.Message);
             }
 
         }
 
-
-        /// <summary>
-        /// Update Cart By ProductId
-        /// </summary>
-        /// <returns></returns>
-        /// 
-        [HttpPatch]
-        [Route("{int productId}")]
-        public IActionResult UpdateCartByProductId(int productId, UpdateCartDto updateCartDto)
-        {
-            try
-            {
-                var updatedcartitem = cartItemRepository.UpdateCartByProductId(productId, updateCartDto);
-                return Ok(updatedcartitem);
-            }
-            catch (Exception ex)
-            {
-                {
-                    throw new Exception(ex.Message);
-                }
-            }
-        }
     }
 }

@@ -9,6 +9,7 @@
         /// <summary>
         /// 
         /// </summary>
+        
         public int? UserId { get; set; }
 
 
@@ -21,12 +22,6 @@
         /// <summary>
         /// 
         /// </summary>
-        public int Quantity { get; set; }
-
-
-        /// <summary>
-        /// 
-        /// </summary>
-        public decimal? TotalAmount { get; set; }
+        public int Quantity { get; set; } = 1;
     }
 }

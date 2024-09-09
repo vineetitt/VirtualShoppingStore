@@ -6,6 +6,7 @@ namespace VirtualShoppingStore.Repositories
     /// <summary>
     /// 
     /// </summary>
+    
     public interface IUserRepository
     {
         /// <summary>
@@ -15,9 +16,6 @@ namespace VirtualShoppingStore.Repositories
         /// 
         List<User> GetAllUser();
 
-
-
-
         /// <summary>
         /// 
         /// </summary>
@@ -26,17 +24,12 @@ namespace VirtualShoppingStore.Repositories
         /// 
         User GetusersbyId(int id);
 
-
-
-
         /// <summary>
         /// 
         /// </summary>
         /// <param name="user"></param>
         /// <returns></returns>
         void AddUser(User user);
-
-
 
         /// <summary>
         /// 
@@ -45,9 +38,6 @@ namespace VirtualShoppingStore.Repositories
         /// <returns></returns>
         void DeleteUserById(int id);
 
-
-
-
         /// <summary>
         /// 
         /// </summary>
@@ -55,7 +45,7 @@ namespace VirtualShoppingStore.Repositories
         /// <param name="updateUserRequestDto"></param>
         /// <returns></returns>
         public User UpdateUserByPatch(int id, UpdateUserRequestDto updateUserRequestDto);
-    }
 
+    }
 
 }

@@ -8,11 +8,11 @@
         /// <summary>
         /// 
         /// </summary>
-        public string Username { get; set; } = null!;
+        public string ?Username { get; set; } = null!;
         /// <summary>
         /// 
         /// </summary>
-        public string FirstName { get; set; }
+        public string ?FirstName { get; set; }
         /// <summary>
         /// 
         /// </summary>
@@ -20,25 +20,25 @@
         /// <summary>
         /// 
         /// </summary>
-        public string PhoneNo { get; set; }
+        public string ?PhoneNo { get; set; }
         /// <summary>
         /// 
         /// </summary>
-        public string Address { get; set; }
+        public string ?Address { get; set; }
         /// <summary>
         /// 
         /// </summary>
-        public string City { get; set; }
+        public string ?City { get; set; }
         /// <summary>
         /// 
         /// </summary>
 
-        public string PasswordHash { get; set; } = null!;
+        public string ?PasswordHash { get; set; } 
 
         /// <summary>
         /// 
         /// </summary>
-        public string Email { get; set; } = null;
+        public string ?Email { get; set; }
 
     }
 }

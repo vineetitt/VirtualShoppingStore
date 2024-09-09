@@ -31,15 +31,13 @@ builder.Services.AddControllers()
 builder.Services.AddDbContext<VirtualShoppingStoreDbContext>(options =>
 options.UseSqlServer(builder.Configuration.GetConnectionString("VirtualShoppingStoreDbConnectionString")));
 
-builder.Services.AddScoped<IUserRepository, SQLUserRepository>();
-builder.Services.AddScoped<IProductRepository, SQLProductRepository>();
-builder.Services.AddScoped<ICategoryRepository, SQLCategoryRepository>();
-builder.Services.AddScoped<IStatusRepository, SQLStatusRepository>();
-builder.Services.AddScoped<IOrderRepository, SQLOrderRepository>();
-builder.Services.AddScoped<IOrderItemRepository, SQLOrderItemRepository>();
-builder.Services.AddScoped<ICartItemRepository, SQLCartItemRepository>();
-
-
+builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<IProductRepository, ProductRepository>();
+builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
+builder.Services.AddScoped<IStatusRepository, StatusRepository>();
+builder.Services.AddScoped<IOrderRepository, OrderRepository>();
+builder.Services.AddScoped<IOrderItemRepository, OrderItemRepository>();
+builder.Services.AddScoped<ICartItemRepository, CartItemRepository>();
 
 var app = builder.Build();
 
@@ -49,7 +47,6 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "Ecommerce APIs v1"));
 }
-
 
 app.UseHttpsRedirection();
 

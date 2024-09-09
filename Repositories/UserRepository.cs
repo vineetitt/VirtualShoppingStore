@@ -9,26 +9,26 @@ using VirtualShoppingStore.Models.DTO.UserDto;
 namespace VirtualShoppingStore.Repositories
 {
     /// <summary>
-    /// 
+    /// UserRepository class
     /// </summary>
-    public class SQLUserRepository : IUserRepository
+    public class UserRepository : IUserRepository
     {
         private readonly VirtualShoppingStoreDbContext virtualShoppingStoreDbContext;
         /// <summary>
         /// 
         /// </summary>
         /// <param name="virtualShoppingStoreDbContext"></param>
-        public SQLUserRepository(VirtualShoppingStoreDbContext virtualShoppingStoreDbContext)
+        public UserRepository(VirtualShoppingStoreDbContext virtualShoppingStoreDbContext)
         {
             this.virtualShoppingStoreDbContext = virtualShoppingStoreDbContext;
         }
-
 
         /// <summary>
         /// Get all User
         /// </summary>
         /// <returns></returns>
         /// <exception cref="NotImplementedException"></exception>
+        
         public List<User> GetAllUser()
         {
             var allUserData = virtualShoppingStoreDbContext.Users.Where(e => e.Deactive == false).ToList();
@@ -36,7 +36,7 @@ namespace VirtualShoppingStore.Repositories
 
             if (!allUserData.Any())
             {
-                throw new Exception("No Users found");
+                throw new CustomException("No Users found",400);
             }
 
             return allUserData;
@@ -52,7 +52,7 @@ namespace VirtualShoppingStore.Repositories
         {
             var users = virtualShoppingStoreDbContext.Users.FirstOrDefault(a=>a.Deactive == false && a.UserId == id);
             if (users==null) {
-                throw new Exception("No Users found");
+                throw new CustomException("No Users found",400);
             }
             return users;
         }
@@ -79,19 +79,18 @@ namespace VirtualShoppingStore.Repositories
                 }
                 else
                 {
-                    throw new Exception("User with this email or username already exists");
+                    throw new CustomException("User with this email or username already exists",400);
                 }
                 
             }
         }
-
-        
 
         /// <summary>
         /// Delete User by Id
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
+        
         public void DeleteUserById(int id)
         {
             var existingUser = GetusersbyId(id);
@@ -99,17 +98,14 @@ namespace VirtualShoppingStore.Repositories
             virtualShoppingStoreDbContext.SaveChanges();
         }
 
-
-
-
         /// <summary>
-        /// 
+        /// UpdateUserByPatch
         /// </summary>
         /// <param name="id"></param>
         /// <param name="updateUserRequestDto"></param>
         /// <returns></returns>
         /// <exception cref="Exception"></exception>
-       
+
         public User UpdateUserByPatch(int id, UpdateUserRequestDto updateUserRequestDto )
         {
 
@@ -117,7 +113,7 @@ namespace VirtualShoppingStore.Repositories
 
             if (existinguser == null)
             {
-                throw new Exception("No existing user found with this id");
+                throw new CustomException("No existing user found with this id",400);
             }
 
             existinguser.Username= updateUserRequestDto.Username?? existinguser.Username;
@@ -134,5 +130,7 @@ namespace VirtualShoppingStore.Repositories
             return existinguser;
 
         }
+
     }
+
 }

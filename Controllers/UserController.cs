@@ -18,8 +18,6 @@ namespace VirtualShoppingStore.Controllers
         
         private readonly IUserRepository userRepository;
 
-
-
         /// <summary>
         /// 
         /// </summary>
@@ -29,9 +27,6 @@ namespace VirtualShoppingStore.Controllers
             
             this.userRepository = userRepository;
         }
-
-
-
 
         /// <summary>
         /// Get all user
@@ -45,23 +40,28 @@ namespace VirtualShoppingStore.Controllers
                 var response = userRepository.GetAllUser();
                 return Ok(response);
             }
+
+            catch (CustomException ex)
+            {
+                return StatusCode(ex.StatusCode, ex.Message);
+            }
+
             catch (Exception ex)
             {
-                return Ok(ex.Message);
+                return StatusCode(500, $"An error occurred: {ex.Message}");
             }
 
         }
-
-
-
 
         /// <summary>
         /// Get User By ID
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
+        
         [HttpGet]
         [Route("{id}")]
+
         public IActionResult GetUsersbyId(int id)
         {
             try
@@ -70,9 +70,15 @@ namespace VirtualShoppingStore.Controllers
                 return Ok(response);
 
             }
+
+            catch (CustomException ex)
+            {
+                return StatusCode(ex.StatusCode, ex.Message);
+            }
+
             catch (Exception ex)
             {
-                return Ok(ex.Message);
+                return StatusCode(500, $"An error occurred: {ex.Message}");
             }
         }
 
@@ -81,7 +87,9 @@ namespace VirtualShoppingStore.Controllers
         /// </summary>
         /// <param name="addUserDto"></param>
         /// <returns></returns>
+        
         [HttpPost]
+
         public IActionResult AddUser([FromBody] AddUserDto addUserDto)
         {
             try
@@ -102,12 +110,18 @@ namespace VirtualShoppingStore.Controllers
                 userRepository.AddUser(userdomain);
                 return Ok(userdomain);
             }
+
+            catch (CustomException ex)
+            {
+                return StatusCode(ex.StatusCode, ex.Message);
+            }
+
             catch (Exception ex)
             {
-                return Ok(ex.Message);
+                return StatusCode(500, $"An error occurred: {ex.Message}");
             }
-        }
 
+        }
 
         /// <summary>
         ///  Delete User By ID
@@ -124,14 +138,18 @@ namespace VirtualShoppingStore.Controllers
                 return Ok("Deleted Successfully");
 
             }
+
+            catch (CustomException ex)
+            {
+                return StatusCode(ex.StatusCode, ex.Message);
+            }
+
             catch (Exception ex)
             {
-                return Ok(ex.Message);
+                return StatusCode(500, $"An error occurred: {ex.Message}");
             }
 
         }
-
-
 
         /// <summary>
         /// Update User detail
@@ -147,9 +165,15 @@ namespace VirtualShoppingStore.Controllers
                 var updated = userRepository.UpdateUserByPatch(id, updateUserRequestDto);
                 return Ok(updated);
             }
+
+            catch (CustomException ex)
+            {
+                return StatusCode(ex.StatusCode, ex.Message);
+            }
+
             catch (Exception ex)
             {
-                return BadRequest(ex.Message);
+                return StatusCode(500, $"An error occurred: {ex.Message}");
             }
 
         }

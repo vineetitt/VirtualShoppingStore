@@ -3,7 +3,7 @@
     /// <summary>
     /// 
     /// </summary>
-    public class ResponseStatus
+    public class ResponseStatusDto
     {
         /// <summary>
         /// 
@@ -18,6 +18,6 @@
         /// <summary>
         /// 
         /// </summary>
-        public virtual ICollection<Order> Orders { get; set; } = new List<Order>();
+        //public virtual ICollection<Order> Orders { get; set; } = new List<Order>();
     }
 }
