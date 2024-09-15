@@ -66,20 +66,20 @@ namespace VirtualShoppingStore.Controllers
         }
 
         /// <summary>
-        /// Get Order By Id
+        /// Get Order By UserId
         /// </summary>
-        /// <param name="id"></param>
+        /// <param name="userId"></param>
         /// <returns></returns>
-        
+
         [HttpGet]
 
-        [Route("{id}")]
+        [Route("{userId:int}")]
 
-        public IActionResult GetOrderById(int id)
+        public IActionResult GetOrderById([FromRoute] int userId)
         {
             try
             {
-                var orderlist = orderRepository.GetOrderById(id);
+                var orderlist = orderRepository.GetOrderById(userId);
                 return Ok(orderlist);
             }
 
@@ -95,33 +95,33 @@ namespace VirtualShoppingStore.Controllers
 
         }
 
-        /// <summary>
-        /// Add Order
-        /// </summary>
-        /// <param name="addOrderDto"></param>
-        /// <returns></returns>
+        ///// <summary>
+        ///// Add Order
+        ///// </summary>
+        ///// <param name="addOrderDto"></param>
+        ///// <returns></returns>
         
-        [HttpPost]
+        //[HttpPost]
 
-        public IActionResult AddOrder(AddOrderDto addOrderDto)
-        {
-            try
-            {
-                var order= orderRepository.AddOrder(addOrderDto);
-                return Ok(order);
-            }
+        //public IActionResult AddOrder(AddOrderDto addOrderDto)
+        //{
+        //    try
+        //    {
+        //        var order= orderRepository.AddOrder(addOrderDto);
+        //        return Ok(order);
+        //    }
 
-            catch (CustomException ex)
-            {
-                return StatusCode(ex.StatusCode, ex.Message);
-            }
+        //    catch (CustomException ex)
+        //    {
+        //        return StatusCode(ex.StatusCode, ex.Message);
+        //    }
 
-            catch (Exception ex)
-            { 
-                return StatusCode(500, $"An unexpected error occurred: {ex.Message}");
-            }
+        //    catch (Exception ex)
+        //    { 
+        //        return StatusCode(500, $"An unexpected error occurred: {ex.Message}");
+        //    }
 
-        }
+        //}
 
         /// <summary>
         /// Delete order by id
@@ -154,36 +154,62 @@ namespace VirtualShoppingStore.Controllers
 
         }
 
-        /// <summary>
-        /// Update Order
-        /// </summary>
-        /// <param name="orderId"></param>
-        /// <param name="UpdateOrderDto"></param>
-        /// <returns></returns>
+        ///// <summary>
+        ///// Update Order
+        ///// </summary>
+        ///// <param name="orderId"></param>
+        ///// <param name="UpdateOrderDto"></param>
+        ///// <returns></returns>
         
-        [HttpPatch("{orderId}")]
+        //[HttpPatch("{orderId}")]
 
-        public IActionResult UpdateOrder(int orderId, UpdateOrderDto UpdateOrderDto)
+        //public IActionResult UpdateOrder(int orderId, UpdateOrderDto UpdateOrderDto)
+        //{
+
+        //    try
+        //    {
+        //        orderRepository.UpdateOrder(orderId, UpdateOrderDto);
+        //        return Ok();
+        //    }
+
+        //    catch (CustomException ex)
+        //    {
+        //        return StatusCode(ex.StatusCode, ex.Message);
+        //    }
+
+        //    catch (Exception ex)
+        //    {
+        //        return BadRequest(ex.Message);
+        //    }
+
+        //}
+
+        /// <summary>
+        /// Place Order By User Id
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <returns></returns>
+        /// <exception cref="Exception"></exception>
+
+        [HttpPost]
+        [Route("{userId:int}")]
+        public IActionResult PlaceOrderByUserId(int userId)
         {
-
             try
             {
-                orderRepository.UpdateOrder(orderId, UpdateOrderDto);
-                return Ok();
+                var placeorder = orderRepository.PlaceOrderByUserId(userId);
+                return Ok(placeorder);
             }
-
-            catch (CustomException ex)
+            catch(CustomException ex)
             {
-                return StatusCode(ex.StatusCode, ex.Message);
+                throw new Exception(ex.Message);
             }
-
-            catch (Exception ex)
+            catch(Exception ex)
             {
-                return BadRequest(ex.Message);
+                throw new Exception(ex.Message);
             }
 
         }
-        
     }
 
 }

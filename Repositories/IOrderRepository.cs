@@ -20,17 +20,17 @@ namespace VirtualShoppingStore.Repositories
         /// <summary>
         /// GetOrder
         /// </summary>
-        /// <param name="id"></param>
+        /// <param name="UserId"></param>
         /// <returns></returns>
 
-        public Order GetOrderById(int id);
+        public Order GetOrderById(int UserId);
 
-        /// <summary>
-        /// AddOrder
-        /// </summary>
-        /// <param name="addOrderDto"></param>
+        ///// <summary>
+        ///// AddOrder
+        ///// </summary>
+        ///// <param name="addOrderDto"></param>
 
-        public Order AddOrder(AddOrderDto addOrderDto);
+        //public Order AddOrder(AddOrderDto addOrderDto);
 
         /// <summary>
         /// DeleteOrder
@@ -38,13 +38,41 @@ namespace VirtualShoppingStore.Repositories
         /// <param name="id"></param>
         public void DeleteOrder(int id);
 
-        /// <summary>
-        /// UpdateOrder
-        /// </summary>
-        /// <param name="orderId"></param>
-        /// <param name="UpdateOrderDto"></param>
+        ///// <summary>
+        ///// UpdateOrder                                 How can someone update order
+        ///// </summary>
+        ///// <param name="orderId"></param>
+        ///// <param name="UpdateOrderDto"></param>
 
-        public void UpdateOrder(int orderId, UpdateOrderDto UpdateOrderDto);
+        //public void UpdateOrder(int orderId, UpdateOrderDto UpdateOrderDto);
+
+
+        ///// <summary>
+        ///// 
+        ///// </summary>
+        ///// <param name="userId"></param>
+        ///// <returns></returns>
+        //public Order PlaceOrderFromCart(int userId);
+
+
+
+        ///// <summary>
+        ///// 
+        ///// </summary>
+        ///// <param name="userId"></param>
+        ///// <returns></returns>
+        //Order PlaceOrderByUserId(int userId);
+
+
+
+
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <returns></returns>
+        OrderDT0 PlaceOrderByUserId(int userId);
 
     }
 

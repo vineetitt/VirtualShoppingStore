@@ -150,8 +150,6 @@ namespace VirtualShoppingStore.Controllers
 
         }
 
-
-
         /// <summary>
         /// Show All order itemsx
         /// </summary>

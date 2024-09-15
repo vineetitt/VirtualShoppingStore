@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-//using System.Text.Json.Serialization;
 
 namespace VirtualShoppingStore.Models;
 /// <summary>
@@ -58,7 +57,7 @@ public partial class Order
     /// <summary>
     /// 
     /// </summary>
-    
+
     public virtual User? User { get; set; }
 
 }

@@ -1,6 +1,9 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Mvc;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+
+using System.Text.Json.Serialization;
 
 namespace VirtualShoppingStore.Models;
 
@@ -76,6 +79,7 @@ public partial class Product
     /// Cartitems
     /// </summary>
 
+    [JsonIgnore]
     public virtual ICollection<Cartitem> Cartitems { get; set; } = new List<Cartitem>();
 
     /// <summary>
@@ -87,7 +91,6 @@ public partial class Product
     /// <summary>
     /// Orderitems
     /// </summary>
-
     public virtual ICollection<Orderitem> Orderitems { get; set; } = new List<Orderitem>();
 
 }

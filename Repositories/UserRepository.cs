@@ -52,7 +52,7 @@ namespace VirtualShoppingStore.Repositories
         {
             var users = virtualShoppingStoreDbContext.Users.FirstOrDefault(a=>a.Deactive == false && a.UserId == id);
             if (users==null) {
-                throw new CustomException("No Users found",400);
+                throw new CustomException("No User found with this id",404);
             }
             return users;
         }
@@ -116,16 +116,15 @@ namespace VirtualShoppingStore.Repositories
                 throw new CustomException("No existing user found with this id",400);
             }
 
-            existinguser.Username= updateUserRequestDto.Username?? existinguser.Username;
-            existinguser.FirstName= updateUserRequestDto.FirstName??existinguser.FirstName;
+            existinguser.Username = updateUserRequestDto.Username ?? existinguser.Username;
+            existinguser.FirstName = updateUserRequestDto.FirstName ?? existinguser.FirstName;
             existinguser.LastName = updateUserRequestDto.LastName ?? existinguser.LastName;
             existinguser.Email = updateUserRequestDto.Email ?? existinguser.Email;
             existinguser.City = updateUserRequestDto.City ?? existinguser.City;
             existinguser.Address = updateUserRequestDto.Address ?? existinguser.Address;
             existinguser.PasswordHash = updateUserRequestDto.PasswordHash ?? existinguser.PasswordHash;
-            existinguser.PhoneNo=updateUserRequestDto.PhoneNo ?? existinguser.PhoneNo;
+            existinguser.PhoneNo = updateUserRequestDto.PhoneNo ?? existinguser.PhoneNo;
 
-           
             virtualShoppingStoreDbContext.SaveChanges();
             return existinguser;
 

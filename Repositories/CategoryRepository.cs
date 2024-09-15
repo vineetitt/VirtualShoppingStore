@@ -1,5 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Data.SqlClient;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using VirtualShoppingStore.Models;
 using VirtualShoppingStore.Models.DTO.CategoryDto;
@@ -55,30 +57,60 @@ namespace VirtualShoppingStore.Repositories
         public void DeleteCategoryById(int id)
         {
 
-            var data= virtualShoppingStoreDbContext.Categories.FirstOrDefault(x=>x.CategoryId==id);
+            //var data= virtualShoppingStoreDbContext.Categories.FirstOrDefault(x=>x.CategoryId==id);
 
-            if (data == null) 
+            //if (data == null) 
+            //{
+
+            //    throw new CustomException("Invalid category Id",400);
+
+            //}
+
+            //var products = virtualShoppingStoreDbContext.Products.Any(p => p.CategoryId == id);
+
+            //if (products)
+            //{
+
+            //    throw new Exception("Cannot delete category because it is being used by products.");
+
+            //}
+
+            //else
+            //{
+
+            //    virtualShoppingStoreDbContext.Categories.Remove(data);
+            //    virtualShoppingStoreDbContext.SaveChanges();
+
+            //}
+
+
+            try
+            {
+                virtualShoppingStoreDbContext.Database.ExecuteSqlInterpolated($"EXEC DeleteCategoryById {id}");
+            }
+            catch (SqlException sqlEx)
             {
 
-                throw new CustomException("Invalid category Id",400);
+                if (sqlEx.Message.Contains("NO SUCH CATEGORY FOUND WITH THIS ID"))
+                {
+                    throw new CustomException("NO SUCH CATEGORY FOUND WITH THIS ID", 400);
+                }
+
+                else if (sqlEx.Message.Contains("CANNOT DELETE BCOZ PRODUCT IS PRESENT WITH THIS ID"))
+                {
+                    throw new CustomException("CANNOT DELETE BCOZ PRODUCT IS PRESENT WITH THIS ID", 400);
+                }
+
+                else
+                {
+                    throw new Exception("An error occurred while deleting the category.");
+                }
 
             }
 
-            var products = virtualShoppingStoreDbContext.Products.Any(p => p.CategoryId == id);
-
-            if (products)
-            {
-
-                throw new Exception("Cannot delete category because it is being used by products.");
-
-            }
-
-            else
-            {
-
-                virtualShoppingStoreDbContext.Categories.Remove(data);
-                virtualShoppingStoreDbContext.SaveChanges();
-
+            catch (Exception ex)
+            { 
+                throw new Exception(ex.Message);
             }
 
         }

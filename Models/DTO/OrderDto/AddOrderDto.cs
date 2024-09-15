@@ -30,8 +30,10 @@ namespace VirtualShoppingStore.Models.DTO.OrderDto
         /// Orderitems
         /// </summary>
 
+
         [Required]
-        public List<AddOrderItemDto> Orderitems { get; set; } 
+
+        public List<AddOrderItemDto> Orderitems { get; set; }
 
     }
 

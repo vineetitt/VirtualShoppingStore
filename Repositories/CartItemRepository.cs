@@ -1,4 +1,5 @@
-﻿using Microsoft.IdentityModel.Tokens;
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using VirtualShoppingStore.Models;
 using VirtualShoppingStore.Models.DTO.CartItemDto;
 
@@ -21,30 +22,6 @@ namespace VirtualShoppingStore.Repositories
             this.virtualShoppingStoreDbContext = virtualShoppingStoreDbContext;
         }
 
-        ///// <summary>
-        ///// Get All Cart
-        ///// </summary>
-        ///// <returns></returns>
-        ///// <exception cref="Exception"></exception>
-        /////get all non placed item
-        /////ge
-        //public List<Cartitem> GetAllCartItems()
-        //{
-
-        //    var allcartitems = virtualShoppingStoreDbContext.Cartitems.ToList();
-
-        //    if (allcartitems.Any())
-        //    {
-        //        return allcartitems;
-        //    }
-
-        //    else
-        //    {
-        //        throw new CustomException("Cart Items table is empty",400);
-        //    }
-
-        //}
-
         /// <summary>
         /// Get Cart By UserId
         /// </summary>
@@ -54,7 +31,12 @@ namespace VirtualShoppingStore.Repositories
         public IEnumerable<Cartitem> GetCartByUserId(int id)
         {
 
-            var cartitems= virtualShoppingStoreDbContext.Cartitems.Where(x => x.UserId == id && x.IsPlaced==false).ToList();
+            var cartitems= virtualShoppingStoreDbContext.Cartitems
+                 .Include(ci => ci.Product)
+                    .ThenInclude(p=>p.Category) 
+                 //.Include(ci => ci.User)
+                .Where(x => x.UserId == id && x.IsPlaced==false).ToList();
+
 
             if (cartitems != null) 
             {
@@ -117,9 +99,6 @@ namespace VirtualShoppingStore.Repositories
                 virtualShoppingStoreDbContext.Cartitems.Add(addtocart);
 
             }
-
-            //product.StockQuantity -= addToCartDto.Quantity;              // BCOZ I WANT THAT QUAN SHOULD NOT DECREASE BY ADDING IN CART
-            //virtualShoppingStoreDbContext.Products.Update(product);
 
             virtualShoppingStoreDbContext.SaveChanges();
 

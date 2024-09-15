@@ -157,6 +157,7 @@ namespace VirtualShoppingStore.Controllers
         /// <param name="id"></param>
         /// <param name="updateUserRequestDto"></param>
         /// <returns></returns>
+        
         [HttpPatch]
         public IActionResult UpdateUserByPatch(int id, UpdateUserRequestDto updateUserRequestDto)
         {

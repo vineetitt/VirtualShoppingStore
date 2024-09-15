@@ -36,12 +36,12 @@ namespace VirtualShoppingStore.Controllers
         
         [HttpGet]
 
-        public IActionResult GetAllProduct()
+        public IActionResult GetAllProduct([FromQuery] string? filteron, [FromQuery] string? queryname, [FromQuery] int pagenumber=1, [FromQuery] int pagesize=50)
         {
             
             try
             {
-                var data = productRepository.GetAllProduct();
+                var data = productRepository.GetAllProduct(filteron, queryname, pagenumber, pagesize );
                 var responseProductDto = new List<ResponseProductDto>();
                 foreach (var item in data)
                 {

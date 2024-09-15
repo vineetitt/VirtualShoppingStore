@@ -15,7 +15,7 @@ namespace VirtualShoppingStore.Repositories
         /// GetAllProduct
         /// </summary>
         /// <returns></returns>
-        List<Product> GetAllProduct();
+        List<Product> GetAllProduct(string? filteron, string? queryname, int pagenumber, int pagesize);
 
         /// <summary>
         /// AddNewProduct

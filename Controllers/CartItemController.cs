@@ -1,8 +1,10 @@
 ﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using VirtualShoppingStore.Models;
 using VirtualShoppingStore.Models.DTO.CartItemDto;
 using VirtualShoppingStore.Repositories;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace VirtualShoppingStore.Controllers
 {
@@ -25,34 +27,6 @@ namespace VirtualShoppingStore.Controllers
         {
             this.cartItemRepository = cartItemRepository;
         }
-
-        ///// <summary>
-        ///// Get All Cart 
-        ///// </summary>
-        ///// <returns></returns>
-
-        //[HttpGet]
-
-        //public IActionResult GetAllCartItems()
-        //{
-
-        //    try
-        //    {
-        //        var allcartitems = cartItemRepository.GetAllCartItems();
-        //        return Ok(allcartitems);
-        //    }
-        //    catch (CustomException ex)
-        //    {
-
-        //        return StatusCode(ex.StatusCode, ex.Message);
-        //    }
-
-        //    catch (Exception ex)
-        //    {
-        //        return StatusCode(500, $"An unexpected error occurred: {ex.Message}");
-        //    }
-
-        //}
 
         /// <summary>
         /// Get non placed CartItem By User id
@@ -179,3 +153,5 @@ namespace VirtualShoppingStore.Controllers
 
     }
 }
+
+

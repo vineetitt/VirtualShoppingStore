@@ -30,12 +30,24 @@ namespace VirtualShoppingStore.Repositories
         /// </summary>
         /// <returns></returns>
         
-        public List<Product> GetAllProduct()
+        public List<Product> GetAllProduct(string? filteron, string? queryname , int pagenumber, int pagesize)
         {
-            var data= virtualShoppingStoreDbContext.Products.ToList();
+            
+            var data= virtualShoppingStoreDbContext.Products.AsQueryable();
+
+            if(string.IsNullOrWhiteSpace(filteron)==false && string.IsNullOrWhiteSpace(queryname) ==false)
+            {
+                if(filteron.Equals("Productname", StringComparison.OrdinalIgnoreCase))
+                {
+                    data= data.Where(x=>x.ProductName.Contains(queryname));
+                }
+
+            }
+            var size= (pagenumber-1)*pagesize;
+
             if (data.Any())
             {
-                return data;
+                return data.Skip(size).Take(pagesize).ToList();
             }
 
             throw new CustomException("No products found.", 200);
