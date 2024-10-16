@@ -10,8 +10,9 @@ namespace VirtualShoppingStore.Controllers
 {
 
     /// <summary>
-    /// 
+    /// Controller for managing cart items in the virtual shopping store.
     /// </summary>
+
     [Route("api/[controller]")]
     [ApiController]
 
@@ -20,22 +21,21 @@ namespace VirtualShoppingStore.Controllers
         private readonly ICartItemRepository cartItemRepository;
 
         /// <summary>
-        /// 
+        /// Initializes a new instance of the <see cref="CartItemController"/> class.
         /// </summary>
-        /// <param name="cartItemRepository"></param>
+        /// <param name="cartItemRepository">The repository used to manage cart items.</param>
         public CartItemController(ICartItemRepository cartItemRepository)
         {
             this.cartItemRepository = cartItemRepository;
         }
 
         /// <summary>
-        /// Get non placed CartItem By User id
+        /// Retrieves non-placed cart items for a specified user.
         /// </summary>
-        /// <param name="userId"></param>
-        /// <returns></returns>
-        
-        [HttpGet]
+        /// <param name="userId">The ID of the user whose cart items are to be retrieved.</param>
+        /// <returns>A list of non-placed cart items for the specified user.</returns>
 
+        [HttpGet]
         [Route("{userId}")]
 
         public IActionResult GetCartByUserId(int userId)
@@ -55,18 +55,17 @@ namespace VirtualShoppingStore.Controllers
 
             catch (Exception ex)
             {
-                return StatusCode(500, $"An error occurred: {ex.Message}");
+                return BadRequest(ex.Message);
             }
 
         }
 
         /// <summary>
-        /// Add product to cart By user id 
+        /// Adds a product to the cart for a specified user.
         /// </summary>
-        /// <param name="addToCartDto"></param>
-        /// <returns></returns>
-        /// <exception cref="Exception"></exception>
-        
+        /// <param name="addToCartDto">The DTO containing details of the product to be added to the cart.</param>
+        /// <returns>A status indicating the success or failure of the operation.</returns>
+
         [HttpPost]
 
         public IActionResult AddToCart(AddToCartDto addToCartDto)
@@ -85,17 +84,16 @@ namespace VirtualShoppingStore.Controllers
 
             catch (Exception ex) 
             {
-                return StatusCode(500, $"An unexpected error occurred: {ex.Message}");
+                return BadRequest(ex.Message);
             }
             
         }
 
         /// <summary>
-        /// Delete From Cart By CartItemId
+        /// Deletes a cart item by its ID.
         /// </summary>
-        /// <param name="cartitemId"></param>
-        /// <returns></returns>
-        /// <exception cref="Exception"></exception>
+        /// <param name="cartitemId">The ID of the cart item to be deleted.</param>
+        /// <returns>A status indicating the success or failure of the operation.</returns>
 
         [HttpDelete]
 
@@ -114,19 +112,18 @@ namespace VirtualShoppingStore.Controllers
 
             catch (Exception ex)
             {
-                return StatusCode(500 ,$"An unexpected error occurred: {ex.Message}");
+                return BadRequest(ex.Message);
             }
 
         }
 
         /// <summary>
-        /// Update CartItem Quantity by cartitemId
+        /// Updates the quantity of a cart item by its ID.
         /// </summary>
-        /// <param name="CartItemId"></param>
-        /// <param name="updateCartDto"></param>
-        /// <returns></returns>
-        /// <exception cref="Exception"></exception>
-        
+        /// <param name="CartItemId">The ID of the cart item to be updated.</param>
+        /// <param name="updateCartDto">The DTO containing the updated quantity and other details.</param>
+        /// <returns>The updated cart item.</returns>
+
         [HttpPatch]
         [Route("{CartItemId:int}")]
 

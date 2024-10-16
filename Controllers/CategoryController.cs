@@ -10,9 +10,9 @@ using VirtualShoppingStore.Repositories;
 namespace VirtualShoppingStore.Controllers
 {
     /// <summary>
-    /// Category Controller
+    /// Handles HTTP requests related to categories in the VirtualShoppingStore application.
     /// </summary>
-    
+
     [Route("api/[controller]")]
 
     [ApiController]
@@ -22,9 +22,9 @@ namespace VirtualShoppingStore.Controllers
         private readonly ICategoryRepository categoryRepository;
 
         /// <summary>
-        /// CategoryController class
+        /// Initializes a new instance of the <see cref="CategoryController"/> class.
         /// </summary>
-        /// <param name="categoryRepository"></param>
+        /// <param name="categoryRepository">The repository used for managing categories.</param>
 
         public CategoryController(ICategoryRepository categoryRepository)
         {
@@ -32,21 +32,23 @@ namespace VirtualShoppingStore.Controllers
         }
 
         /// <summary>
-        /// GetAllCategories
+        /// Retrieves a list of all categories.
         /// </summary>
-        /// <returns></returns>
-        
+        /// <returns>A list of <see cref="ResponseCategoryDto"/> objects representing all categories.</returns>
+        /// <response code="200">Returns the list of categories.</response>
+        /// <response code="500">If an internal server error occurs.</response>
+
         [HttpGet]
 
         public IActionResult GetAllCategories()
         {
             try
             {
-                var data = categoryRepository.GetAllCategories();
+                var categoryData = categoryRepository.GetAllCategories();
 
                 var responseCategoryDto = new List<ResponseCategoryDto>();
 
-                foreach (var item in data)
+                foreach (var item in categoryData)
                 {
 
                     responseCategoryDto.Add(new ResponseCategoryDto()
@@ -67,17 +69,20 @@ namespace VirtualShoppingStore.Controllers
 
             catch (Exception ex) 
             {
-                return StatusCode(500,$"An unexpected error occurred: {ex.Message}");
+                return BadRequest(ex.Message);
             }
 
         }
 
         /// <summary>
-        /// Get Category By Id
+        /// Retrieves a specific category by its ID.
         /// </summary>
-        /// <param name="id"></param>
-        /// <returns></returns>
- 
+        /// <param name="id">The ID of the category to retrieve.</param>
+        /// <returns>A <see cref="ResponseCategoryDto"/> object representing the specified category.</returns>
+        /// <response code="200">Returns the category.</response>
+        /// <response code="404">If the category with the specified ID is not found.</response>
+        /// <response code="500">If an internal server error occurs.</response>
+
         [HttpGet]
 
         [Route("{id}")]
@@ -85,12 +90,14 @@ namespace VirtualShoppingStore.Controllers
         public IActionResult GetCategoryById(int id) {
             try
             {
-                var data = categoryRepository.GetCategoryById(id);
+                var categoryData = categoryRepository.GetCategoryById(id);
+
                 ResponseCategoryDto responseCategoryDto = new ResponseCategoryDto()
                 {
-                    CategoryId = data.CategoryId,
-                    CategoryName = data.CategoryName,
+                    CategoryId = categoryData.CategoryId,
+                    CategoryName = categoryData.CategoryName,
                 };
+
                 return Ok(responseCategoryDto);
             }
 
@@ -101,16 +108,20 @@ namespace VirtualShoppingStore.Controllers
 
             catch (Exception ex)
             {
-                return StatusCode(500, $"An unexpected error occurred: {ex.Message}");
+                return BadRequest(ex.Message);
             }
 
         }
 
         /// <summary>
-        /// Delete Category
+        /// Deletes a category by its ID.
         /// </summary>
-        /// <returns></returns>
-        
+        /// <param name="id">The ID of the category to delete.</param>
+        /// <returns>HTTP response indicating the result of the delete operation.</returns>
+        /// <response code="200">If the category was successfully deleted.</response>
+        /// <response code="404">If the category with the specified ID is not found.</response>
+        /// <response code="500">If an internal server error occurs.</response>
+
         [HttpDelete]
 
         [Route("{id}")]
@@ -130,25 +141,27 @@ namespace VirtualShoppingStore.Controllers
 
             catch (Exception ex)
             {
-                return StatusCode(500, $"An unexpected error occurred: {ex.Message}");
+                return BadRequest(ex.Message);
             }
 
         }
 
         /// <summary>
-        /// AddCategory
+        /// Adds a new category.
         /// </summary>
-        /// <param name="categoryname"></param>
-        /// <returns></returns>
-        
+        /// <param name="categoryName">The name of the category to add.</param>
+        /// <returns>HTTP response indicating the result of the add operation.</returns>
+        /// <response code="200">If the category was successfully added.</response>
+        /// <response code="500">If an internal server error occurs.</response>
+
         [HttpPost]
         
-        public IActionResult AddCategory(string categoryname)
+        public IActionResult AddCategory(string categoryName)
         {
 
             try
             {
-                categoryRepository.AddCategory(categoryname);
+                categoryRepository.AddCategory(categoryName);
                 return Ok();    
             }
 
@@ -158,18 +171,21 @@ namespace VirtualShoppingStore.Controllers
             }
 
             catch (Exception ex) {
-                return StatusCode(500, $"An unexpected error occurred: {ex.Message}");
+                return BadRequest(ex.Message);
             }
 
         }
 
-        /// <summary>
-        /// UpdateCategory by categoryId
+       /// <summary>
+        /// Updates an existing category by its ID.
         /// </summary>
-        /// <param name="categoryId"></param>
-        /// <param name="updateCategoryDto"></param>
-        /// <returns></returns>
-        /// <exception cref="Exception"></exception>
+        /// <param name="categoryId">The ID of the category to update.</param>
+        /// <param name="updateCategoryDto">The data to update the category with.</param>
+        /// <returns>HTTP response indicating the result of the update operation.</returns>
+        /// <response code="200">If the category was successfully updated.</response>
+        /// <response code="400">If the update operation failed due to a bad request.</response>
+        /// <response code="500">If an internal server error occurs.</response>
+        /// <exception cref="Exception">Throws an exception if an error occurs.</exception>
 
         [HttpPatch]
 
@@ -191,7 +207,7 @@ namespace VirtualShoppingStore.Controllers
 
             catch (Exception ex)
             {
-                return StatusCode(500, $"An unexpected error occurred: {ex.Message}");
+                return BadRequest(ex.Message);
             }
 
         }

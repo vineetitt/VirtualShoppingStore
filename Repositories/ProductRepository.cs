@@ -6,9 +6,8 @@ using VirtualShoppingStore.Models.DTO.ProductDto;
 
 namespace VirtualShoppingStore.Repositories
 {
-
     /// <summary>
-    /// class ProductRepository
+    /// Repository class for managing products in the VirtualShoppingStore database.
     /// </summary>
 
     public class ProductRepository:IProductRepository
@@ -16,121 +15,117 @@ namespace VirtualShoppingStore.Repositories
         private readonly VirtualShoppingStoreDbContext virtualShoppingStoreDbContext;
 
         /// <summary>
-        /// 
+        /// Initializes a new instance of the <see cref="ProductRepository"/> class.
         /// </summary>
-        /// <param name="virtualShoppingStoreDbContext"></param>
-        
+        /// <param name="virtualShoppingStoreDbContext">The database context for accessing products.</param>
+
         public ProductRepository(VirtualShoppingStoreDbContext virtualShoppingStoreDbContext)
         {
             this.virtualShoppingStoreDbContext = virtualShoppingStoreDbContext;
         }
 
         /// <summary>
-        /// GetAllProduct
+        /// Retrieves a paginated list of products with optional filtering.
         /// </summary>
-        /// <returns></returns>
-        
-        public List<Product> GetAllProduct(string? filteron, string? queryname , int pagenumber, int pagesize)
+        /// <param name="categoryId"></param>
+        /// <param name="pageNumber">The page number for pagination.</param>
+        /// <param name="pagesize">The number of products per page.</param>
+        /// <returns>A list of products matching the criteria.</returns>
+        /// <exception cref="CustomException">Thrown when no products are found.</exception>
+
+        public List<Product> GetAllProducts(int? categoryId, int pageNumber, int pagesize)
         {
             
             var data= virtualShoppingStoreDbContext.Products.AsQueryable();
 
-            if(string.IsNullOrWhiteSpace(filteron)==false && string.IsNullOrWhiteSpace(queryname) ==false)
+            if (categoryId.HasValue)
             {
-                if(filteron.Equals("Productname", StringComparison.OrdinalIgnoreCase))
-                {
-                    data= data.Where(x=>x.ProductName.Contains(queryname));
-                }
-
+                data = data.Where(p => p.CategoryId == categoryId);
             }
-            var size= (pagenumber-1)*pagesize;
+            var size= (pageNumber-1)*pagesize;
 
             if (data.Any())
             {
                 return data.Skip(size).Take(pagesize).ToList();
             }
 
-            throw new CustomException("No products found.", 200);
+            throw new CustomException("No products found.", 204);
         }
 
         /// <summary>
-        /// AddNewProduct
+        /// Adds a new product to the database.
         /// </summary>
-        /// <param name="addProductDto"></param>
-        /// <returns></returns>
+        /// <param name="addProductDto">The data transfer object containing product details.</param>
+        /// <returns>Task representing the asynchronous operation.</returns>
+        /// <exception cref="CustomException">Thrown when the category is not found or the product already exists.</exception>
 
         public void AddNewProduct(AddProductDto addProductDto)
         {
-            var x = virtualShoppingStoreDbContext.Categories.FirstOrDefault(y => y.CategoryId == addProductDto.CategoryId);
+            var category = virtualShoppingStoreDbContext.Categories.FirstOrDefault(cat => cat.CategoryId == addProductDto.CategoryId);
 
-            if (x == null)
+            if (category == null)
             {
                 throw new CustomException("Category not found", 400);
             }
 
-            else
+            var existingProduct = virtualShoppingStoreDbContext.Products.FirstOrDefault(prod=>prod.ProductName.Equals(addProductDto.ProductName, StringComparison.OrdinalIgnoreCase));
+
+            if (existingProduct != null)
             {
-
-                var p = new Product();
-                if (addProductDto.ProductName == p.ProductName)
-                {
-                    throw new CustomException("Product with this name already exists try another name", 400);
-                }
-
-                var product = new Product()
-                {
-                    ProductName = addProductDto.ProductName,
-                    Description = addProductDto.Description,
-                    Price = addProductDto.Price,
-                    StockQuantity = addProductDto.StockQuantity,
-                    //CategoryID = addProductDto.CategoryId,
-                    CreatedAt = DateTime.Now,
-                    UpdatedAt = DateTime.Now,
-                    IsDeleted = false
-                };
-
-                virtualShoppingStoreDbContext.Products.Add(product);
-                virtualShoppingStoreDbContext.SaveChanges();
-
+                throw new CustomException("Product with this name already exists. Try another name", 400);
             }
 
+            var product = new Product()
+            {
+                ProductName = addProductDto.ProductName,
+                Description = addProductDto.Description,
+                Price = addProductDto.Price,
+                StockQuantity = addProductDto.StockQuantity,
+                CreatedAt = DateTime.Now,
+                UpdatedAt = DateTime.Now,
+                IsDeleted = false
+            };
+
+            virtualShoppingStoreDbContext.Products.Add(product);
+            virtualShoppingStoreDbContext.SaveChanges();
         }
 
         /// <summary>
-        /// Delete Product By Id
+        /// Deletes a product by its ID.
         /// </summary>
-        /// <param name="id"></param>
-        /// <returns></returns>
+        /// <param name="id">The ID of the product to delete.</param>
+        /// <returns>Task representing the asynchronous operation.</returns>
+        /// <exception cref="CustomException">Thrown when no product is found with the given ID.</exception>
 
         public void DeleteProductById(int id)
         {
-            var isdeleted = virtualShoppingStoreDbContext.Products.FirstOrDefault(X => X.ProductId == id);
+            var productToDelete = virtualShoppingStoreDbContext.Products.FirstOrDefault(prod => prod.ProductId == id);
 
-            if (isdeleted == null)
+            if (productToDelete == null)
             {
-                throw new CustomException("No product available by this id",400);
+                throw new CustomException("No product available by this id",404);
             }
 
-            virtualShoppingStoreDbContext.Products.Remove(isdeleted);
+            virtualShoppingStoreDbContext.Products.Remove(productToDelete);
             virtualShoppingStoreDbContext.SaveChanges();
             
         }
 
         /// <summary>
-        /// UpdateProductByid
+        /// Updates a product by its ID.
         /// </summary>
-        /// <param name="id"></param>
-        /// <param name="patchProductDto"></param>
-        /// <returns></returns>
-        /// <exception cref="Exception"></exception>
-        
-        public Product UpdateProductByid(int id, PatchProductDto patchProductDto)
+        /// <param name="id">The ID of the product to update.</param>
+        /// <param name="patchProductDto">The data transfer object containing updated product details.</param>
+        /// <returns>The updated product.</returns>
+        /// <exception cref="CustomException">Thrown when no product is found with the given ID.</exception>
+
+        public Product UpdateProductById(int id, PatchProductDto patchProductDto)
         {
             
-            var product = virtualShoppingStoreDbContext.Products.FirstOrDefault(y => y.ProductId == id);
+            var product = virtualShoppingStoreDbContext.Products.FirstOrDefault(prod => prod.ProductId == id);
 
             if (product == null) {
-                throw new CustomException("No product found with this product id", 400);
+                throw new CustomException("No product found with this product id", 404);
             }
 
             product.ProductName = patchProductDto.ProductName ?? product.ProductName;
@@ -147,27 +142,42 @@ namespace VirtualShoppingStore.Repositories
         }
 
         /// <summary>
-        /// GetProductById
+        /// Retrieves a product by its ID.
         /// </summary>
-        /// <param name="productId"></param>
-        /// <returns></returns>
-        /// <exception cref="Exception"></exception>
+        /// <param name="productId">The ID of the product to retrieve.</param>
+        /// <returns>The product with the given ID.</returns>
+        /// <exception cref="CustomException">Thrown when no product is found with the given ID.</exception>
+
         public Product GetProductById(int productId)
         {
-            
-            var productidcheck= virtualShoppingStoreDbContext.Products.FirstOrDefault(x=>x.ProductId==productId);
-            var product = virtualShoppingStoreDbContext.Products.FirstOrDefault(x => x.ProductId == productId);
+            var product = virtualShoppingStoreDbContext.Products.FirstOrDefault(prod => prod.ProductId == productId);
 
             if (product != null)
             {
                 return product;
             }
-
             else
             {
-                throw new CustomException("Product not found.",200);
+                throw new CustomException("Product not found.",404);
             }
 
+        }
+
+        /// <summary>
+        /// Get Product Count
+        /// </summary>
+        /// <param name="categoryId"></param>
+        /// <returns></returns>
+        public int GetProductCount(int? categoryId)
+        {
+            var data = virtualShoppingStoreDbContext.Products.AsQueryable();
+
+            if (categoryId.HasValue)
+            {
+                data = data.Where(p => p.CategoryId == categoryId);
+            }
+
+            return data.Count();
         }
 
     }

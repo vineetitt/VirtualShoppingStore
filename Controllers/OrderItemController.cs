@@ -7,7 +7,7 @@ namespace VirtualShoppingStore.Controllers
 {
 
     /// <summary>
-    /// 
+    /// Handles HTTP requests related to order items in the VirtualShoppingStore application.
     /// </summary>
 
     [Route("api/[controller]")]
@@ -19,9 +19,9 @@ namespace VirtualShoppingStore.Controllers
         private readonly IOrderItemRepository orderItemRepository;
 
         /// <summary>
-        /// 
+        /// Initializes a new instance of the <see cref="OrderItemController"/> class.
         /// </summary>
-        /// <param name="orderItemRepository"></param>
+        /// <param name="orderItemRepository">The repository used for managing order items.</param>
 
         public OrderItemController(IOrderItemRepository orderItemRepository)
         {
@@ -29,19 +29,22 @@ namespace VirtualShoppingStore.Controllers
         }
 
         /// <summary>
-        /// Get Order Item by id
+        /// Retrieves a list of order items for a specified order ID.
         /// </summary>
-        /// <param name="id"></param>
-        /// <returns></returns>
-        
+        /// <param name="id">The ID of the order for which to retrieve order items.</param>
+        /// <returns>A list of order items for the specified order ID.</returns>
+        /// <response code="200">Returns the list of order items.</response>
+        /// <response code="404">If no order items are found for the specified order ID.</response>
+
         [HttpGet]
         [Route("{id}")]
 
-        public IActionResult GetOrderitemsByOrderId(int id)
+        public IActionResult GetOrderItemsByOrderId(int id)
         {
             try
             {
-                var data = orderItemRepository.GetOrderitemsByOrderId(id);
+
+                var data = orderItemRepository.GetOrderItemsByOrderId(id);
                 if (data == null || !data.Any())
                 {
                     return NotFound($"No order items found for order ID {id}.");
@@ -58,23 +61,27 @@ namespace VirtualShoppingStore.Controllers
 
             catch (Exception ex)
             {
-                return StatusCode(500, $"An error occurred: {ex.Message}");
+                return BadRequest(ex.Message);
             }
 
         }
 
         /// <summary>
-        /// Add order Item
+        /// Adds a new order item to the system.
         /// </summary>
-        /// <param name="addOrderItemDto"></param>
-        /// <returns></returns>
+        /// <param name="addOrderItemDto">The data transfer object containing the details of the order item to add.</param>
+        /// <returns>HTTP response indicating the result of the add operation.</returns>
+        /// <response code="200">If the order item was added successfully.</response>
+        /// <response code="400">If there is a problem with the input data.</response>
+
         [HttpPost]
 
-        public IActionResult AddOrderitem(AddOrderItemDto addOrderItemDto)
+        public IActionResult AddOrderItem(AddOrderItemDto addOrderItemDto)
         {
+
             try
             {
-                orderItemRepository.AddOrderitem(addOrderItemDto);
+                orderItemRepository.AddOrderItem(addOrderItemDto);
                 return Ok();
             }
 
@@ -85,78 +92,22 @@ namespace VirtualShoppingStore.Controllers
 
             catch (Exception ex)
             {
-                return StatusCode(500, $"An error occurred: {ex.Message}");
-            }
-        }
-
-
-
-
-        /// <summary>
-        /// Update Order Item
-        /// </summary>
-        /// <param name="id"></param>
-        /// <param name="updateOrderItem"></param>
-        /// <returns></returns>
-        [HttpPatch]
-        [Route("{id}")]
-        public IActionResult UpdateOrderitem(int id, UpdateOrderItemDto updateOrderItem)
-        {
-            try
-            {
-                var updatedorderitem = orderItemRepository.UpdateOrderItem(id, updateOrderItem);
-                return Ok(updatedorderitem);
-            }
-
-            catch (CustomException ex)
-            {
-                return StatusCode(ex.StatusCode, ex.Message);
-            }
-
-            catch (Exception ex)
-            {
-                return StatusCode(500, $"An error occurred: {ex.Message}");
-            }
-
-
-        }
-
-
-
-        /// <summary>
-        /// Delete Order Item
-        /// </summary>
-        /// <param name="id"></param>
-        /// <returns></returns>
-        [HttpDelete]
-        [Route("{id}")]
-        public IActionResult DeleteOrderitem(int id)
-        {
-            try
-            {
-                orderItemRepository.DeleteOrderitem(id);
-                return Ok();
-            }
-
-            catch (CustomException ex)
-            {
-                return StatusCode(ex.StatusCode, ex.Message);
-            }
-
-            catch (Exception ex)
-            {
-                return StatusCode(500, $"An error occurred: {ex.Message}");
+                return BadRequest(ex.Message);
             }
 
         }
 
         /// <summary>
-        /// Show All order itemsx
+        /// Retrieves a list of all order items in the system.
         /// </summary>
-        /// <returns></returns>
-        [HttpGet]
+        /// <returns>A list of all order items.</returns>
+        /// <response code="200">Returns the list of all order items.</response>
+        
+        [HttpGet("all")]
+
         public IActionResult ShowAllOrderItems()
         {
+
             try
             {
                 var orderitems = orderItemRepository.ShowAllOrderItem();
@@ -170,8 +121,11 @@ namespace VirtualShoppingStore.Controllers
 
             catch (Exception ex)
             {
-                return StatusCode(500, $"An error occurred: {ex.Message}");
+                return BadRequest(ex.Message);
             }
+
         }
+
     }
+
 }

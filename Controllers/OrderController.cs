@@ -9,8 +9,9 @@ namespace VirtualShoppingStore.Controllers
 {
 
     /// <summary>
-    /// OrderController class
+    /// Handles HTTP requests related to orders in the VirtualShoppingStore application.
     /// </summary>
+    
     [Route("api/[controller]")]
     [ApiController]
 
@@ -20,21 +21,23 @@ namespace VirtualShoppingStore.Controllers
         private readonly IOrderRepository orderRepository;
 
         /// <summary>
-        /// OrderController constructor
+        /// Initializes a new instance of the <see cref="OrderController"/> class.
         /// </summary>
-        /// <param name="orderRepository"></param>
+        /// <param name="orderRepository">The repository used for managing orders.</param>
 
         public OrderController(IOrderRepository orderRepository)
         {
-
             this.orderRepository = orderRepository;
-
         }
 
         /// <summary>
-        /// Get order details
+        /// Retrieves a list of all orders.
         /// </summary>
-        /// <returns></returns>
+        /// <returns>A list of all orders.</returns>
+        /// <response code="200">Returns the list of orders.</response>
+        /// <response code="404">If no orders are found.</response>
+        /// <response code="500">If an internal server error occurs.</response>
+
         [HttpGet]
 
         public IActionResult GetOrder()
@@ -43,14 +46,7 @@ namespace VirtualShoppingStore.Controllers
             try
             {
                 var data = orderRepository.GetOrders();
-
-                if (data == null)
-                {
-                    return NotFound("No orders found");
-                }
-
                 return Ok(data);
-
             }
 
             catch (CustomException ex)
@@ -60,16 +56,19 @@ namespace VirtualShoppingStore.Controllers
 
             catch (Exception ex)
             {
-                return StatusCode(500, $"An error occurred: {ex.Message}");
+                return BadRequest(ex.Message);
             }
 
         }
 
         /// <summary>
-        /// Get Order By UserId
+        /// Retrieves a list of orders for a specific user by their user ID.
         /// </summary>
-        /// <param name="userId"></param>
-        /// <returns></returns>
+        /// <param name="userId">The ID of the user to retrieve orders for.</param>
+        /// <returns>A list of orders for the specified user.</returns>
+        /// <response code="200">Returns the list of orders for the specified user.</response>
+        /// <response code="404">If no orders are found for the user.</response>
+        /// <response code="500">If an internal server error occurs.</response>
 
         [HttpGet]
 
@@ -90,44 +89,19 @@ namespace VirtualShoppingStore.Controllers
 
             catch (Exception ex)
             {
-                return StatusCode(500, $"An unexpected error occurred: {ex.Message}");
+                return BadRequest(ex.Message);
             }
 
         }
 
-        ///// <summary>
-        ///// Add Order
-        ///// </summary>
-        ///// <param name="addOrderDto"></param>
-        ///// <returns></returns>
-        
-        //[HttpPost]
-
-        //public IActionResult AddOrder(AddOrderDto addOrderDto)
-        //{
-        //    try
-        //    {
-        //        var order= orderRepository.AddOrder(addOrderDto);
-        //        return Ok(order);
-        //    }
-
-        //    catch (CustomException ex)
-        //    {
-        //        return StatusCode(ex.StatusCode, ex.Message);
-        //    }
-
-        //    catch (Exception ex)
-        //    { 
-        //        return StatusCode(500, $"An unexpected error occurred: {ex.Message}");
-        //    }
-
-        //}
-
         /// <summary>
-        /// Delete order by id
+        /// Deletes an order by its ID.
         /// </summary>
-        /// <param name="id"></param>
-        /// <returns></returns>
+        /// <param name="id">The ID of the order to delete.</param>
+        /// <returns>HTTP response indicating the result of the delete operation.</returns>
+        /// <response code="200">If the order was successfully deleted.</response>
+        /// <response code="400">If the delete operation failed due to a bad request.</response>
+        /// <response code="500">If an internal server error occurs.</response>
 
         [HttpDelete]
 
@@ -154,45 +128,18 @@ namespace VirtualShoppingStore.Controllers
 
         }
 
-        ///// <summary>
-        ///// Update Order
-        ///// </summary>
-        ///// <param name="orderId"></param>
-        ///// <param name="UpdateOrderDto"></param>
-        ///// <returns></returns>
-        
-        //[HttpPatch("{orderId}")]
-
-        //public IActionResult UpdateOrder(int orderId, UpdateOrderDto UpdateOrderDto)
-        //{
-
-        //    try
-        //    {
-        //        orderRepository.UpdateOrder(orderId, UpdateOrderDto);
-        //        return Ok();
-        //    }
-
-        //    catch (CustomException ex)
-        //    {
-        //        return StatusCode(ex.StatusCode, ex.Message);
-        //    }
-
-        //    catch (Exception ex)
-        //    {
-        //        return BadRequest(ex.Message);
-        //    }
-
-        //}
-
         /// <summary>
-        /// Place Order By User Id
+        /// Places an order for a specific user by their user ID.
         /// </summary>
-        /// <param name="userId"></param>
-        /// <returns></returns>
-        /// <exception cref="Exception"></exception>
+        /// <param name="userId">The ID of the user placing the order.</param>
+        /// <returns>HTTP response indicating the result of the place order operation.</returns>
+        /// <response code="200">If the order was successfully placed.</response>
+        /// <response code="500">If an internal server error occurs.</response>
+        /// <exception cref="Exception">Throws an exception if an error occurs.</exception>
 
         [HttpPost]
         [Route("{userId:int}")]
+
         public IActionResult PlaceOrderByUserId(int userId)
         {
             try
@@ -200,13 +147,15 @@ namespace VirtualShoppingStore.Controllers
                 var placeorder = orderRepository.PlaceOrderByUserId(userId);
                 return Ok(placeorder);
             }
+
             catch(CustomException ex)
             {
                 throw new Exception(ex.Message);
             }
+
             catch(Exception ex)
             {
-                throw new Exception(ex.Message);
+                return BadRequest(ex.Message);
             }
 
         }

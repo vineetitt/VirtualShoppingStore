@@ -9,7 +9,7 @@ using VirtualShoppingStore.Models.DTO.CategoryDto;
 namespace VirtualShoppingStore.Repositories
 {
     /// <summary>
-    /// class CategoryRepository
+    /// Repository class for managing category data in the VirtualShoppingStore application.
     /// </summary>
 
     public class CategoryRepository: ICategoryRepository
@@ -17,9 +17,9 @@ namespace VirtualShoppingStore.Repositories
         private readonly VirtualShoppingStoreDbContext virtualShoppingStoreDbContext;
 
         /// <summary>
-        ///  CategoryRepository constructor
+        /// Initializes a new instance of the <see cref="CategoryRepository"/> class.
         /// </summary>
-        /// <param name="virtualShoppingStoreDbContext"></param>
+        /// <param name="virtualShoppingStoreDbContext">The database context used for category management.</param>
 
         public CategoryRepository(VirtualShoppingStoreDbContext virtualShoppingStoreDbContext)
         {
@@ -27,13 +27,14 @@ namespace VirtualShoppingStore.Repositories
         }
 
         /// <summary>
-        /// AddCategory
+        /// Adds a new category to the database.
         /// </summary>
-        /// <param name="categoryName"></param>
+        /// <param name="categoryName">The name of the category to add.</param>
+        /// <exception cref="CustomException">Thrown if a category with the same name already exists.</exception>
 
         public void AddCategory(string categoryName)
         {
-            var existingCategory = virtualShoppingStoreDbContext.Categories.FirstOrDefault(C=>C.CategoryName==categoryName);
+            var existingCategory = virtualShoppingStoreDbContext.Categories.FirstOrDefault(category=>category.CategoryName==categoryName);
 
             if (existingCategory != null)
             {
@@ -50,39 +51,13 @@ namespace VirtualShoppingStore.Repositories
         }
 
         /// <summary>
-        /// DeleteCategoryById
+        /// Deletes a category from the database by its ID.
         /// </summary>
-        /// <param name="id"></param>
-        /// <exception cref="Exception"></exception>
+        /// <param name="id">The ID of the category to delete.</param>
+        /// <exception cref="CustomException">Thrown if the category does not exist or cannot be deleted.</exception>
+        
         public void DeleteCategoryById(int id)
         {
-
-            //var data= virtualShoppingStoreDbContext.Categories.FirstOrDefault(x=>x.CategoryId==id);
-
-            //if (data == null) 
-            //{
-
-            //    throw new CustomException("Invalid category Id",400);
-
-            //}
-
-            //var products = virtualShoppingStoreDbContext.Products.Any(p => p.CategoryId == id);
-
-            //if (products)
-            //{
-
-            //    throw new Exception("Cannot delete category because it is being used by products.");
-
-            //}
-
-            //else
-            //{
-
-            //    virtualShoppingStoreDbContext.Categories.Remove(data);
-            //    virtualShoppingStoreDbContext.SaveChanges();
-
-            //}
-
 
             try
             {
@@ -93,12 +68,12 @@ namespace VirtualShoppingStore.Repositories
 
                 if (sqlEx.Message.Contains("NO SUCH CATEGORY FOUND WITH THIS ID"))
                 {
-                    throw new CustomException("NO SUCH CATEGORY FOUND WITH THIS ID", 400);
+                    throw new CustomException("No such category found with this id", 404);
                 }
 
                 else if (sqlEx.Message.Contains("CANNOT DELETE BCOZ PRODUCT IS PRESENT WITH THIS ID"))
                 {
-                    throw new CustomException("CANNOT DELETE BCOZ PRODUCT IS PRESENT WITH THIS ID", 400);
+                    throw new CustomException("Cannot delete because product is present with this id", 400);
                 }
 
                 else
@@ -116,16 +91,17 @@ namespace VirtualShoppingStore.Repositories
         }
 
         /// <summary>
-        /// GetAllCategories
+        /// Retrieves all categories from the database.
         /// </summary>
-        /// <returns></returns>
+        /// <returns>A list of <see cref="Category"/> objects representing all categories.</returns>
+        /// <exception cref="CustomException">Thrown if no categories are found.</exception>
 
         public List<Category> GetAllCategories()
         {
            
             var categorydata = virtualShoppingStoreDbContext.Categories.ToList();
 
-            if (categorydata.IsNullOrEmpty())
+            if (!categorydata.Any())
             {
                 throw new CustomException("Categories not found.", 404);
             }
@@ -138,42 +114,42 @@ namespace VirtualShoppingStore.Repositories
         }
 
         /// <summary>
-        /// GetCategoryById
+        /// Retrieves a specific category by its ID.
         /// </summary>
-        /// <param name="id"></param>
-        /// <returns></returns>
-    
+        /// <param name="id">The ID of the category to retrieve.</param>
+        /// <returns>A <see cref="Category"/> object representing the specified category.</returns>
+        /// <exception cref="CustomException">Thrown if the category is not found.</exception>
+
         public Category GetCategoryById(int id) 
         {
             
-            var data= virtualShoppingStoreDbContext.Categories.FirstOrDefault(x=>x.CategoryId==id);
+            var categoryData= virtualShoppingStoreDbContext.Categories.FirstOrDefault(category=>category.CategoryId==id);
 
-            if (data == null) 
+            if (categoryData == null)
             {
-
-               throw new CustomException($"No such category found by this id:{id}",400);
-
+                throw new CustomException($"Category not found by this id:{id}", 404);
             }
 
-            return data;
+            return categoryData;
 
         }
 
         /// <summary>
-        /// UpdateCategory
+        /// Updates an existing category by its ID.
         /// </summary>
-        /// <param name="categoryId"></param>
-        /// <param name="updateCategoryDto"></param>
-        
+        /// <param name="categoryId">The ID of the category to update.</param>
+        /// <param name="updateCategoryDto">The data to update the category with.</param>
+        /// <exception cref="CustomException">Thrown if the category is not found or the name is invalid.</exception>
+
         public void UpdateCategory(int categoryId, UpdateCategoryDto updateCategoryDto)
         {
 
-            var category = virtualShoppingStoreDbContext.Categories.FirstOrDefault(x => x.CategoryId == categoryId);
+            var category = virtualShoppingStoreDbContext.Categories.FirstOrDefault(category => category.CategoryId == categoryId);
 
             if (category == null)
             {
 
-                throw new CustomException("Category not found.",400);
+                throw new CustomException("Category not found.",404);
 
             }
 

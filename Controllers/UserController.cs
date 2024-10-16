@@ -11,8 +11,10 @@ namespace VirtualShoppingStore.Controllers
     /// <summary>
     /// User Contoller
     /// </summary>
+    
     [Route("api/[controller]")]
     [ApiController]
+
     public class UserController : ControllerBase
     {
         
@@ -22,23 +24,27 @@ namespace VirtualShoppingStore.Controllers
         /// 
         /// </summary>
         /// <param name="userRepository"></param>
+        
         public UserController(IUserRepository userRepository)
-        {
-            
+        { 
             this.userRepository = userRepository;
         }
 
         /// <summary>
-        /// Get all user
+        /// Retrieves all users with pagination.
         /// </summary>
+        /// <param name="pageNumber">The page number to retrieve (default is 1).</param>
+        ///  <param name="pageSize">The number of users per page (default is 5).</param>
         /// <returns></returns>
+
         [HttpGet]
-        public IActionResult GetallUser()
+
+        public IActionResult GetallUsers(int pageNumber=1, int pageSize=5)
         {
             try
             {
-                var response = userRepository.GetAllUser();
-                return Ok(response);
+                var userList = userRepository.GetAllUsers(pageNumber, pageSize);
+                return Ok(userList);
             }
 
             catch (CustomException ex)
@@ -48,27 +54,26 @@ namespace VirtualShoppingStore.Controllers
 
             catch (Exception ex)
             {
-                return StatusCode(500, $"An error occurred: {ex.Message}");
+                return BadRequest(ex.Message);
             }
 
         }
 
         /// <summary>
-        /// Get User By ID
+        ///  Retrieves a user by ID.
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        
+
         [HttpGet]
         [Route("{id}")]
 
-        public IActionResult GetUsersbyId(int id)
+        public IActionResult GetUserbyId(int id)
         {
             try
             {
-                var response = userRepository.GetusersbyId(id);
-                return Ok(response);
-
+                var retrievedUser = userRepository.GetUserbyId(id);
+                return Ok(retrievedUser);
             }
 
             catch (CustomException ex)
@@ -78,16 +83,16 @@ namespace VirtualShoppingStore.Controllers
 
             catch (Exception ex)
             {
-                return StatusCode(500, $"An error occurred: {ex.Message}");
+                return BadRequest(ex.Message);
             }
         }
 
         /// <summary>
-        /// Add new user
+        /// Adds a new user.
         /// </summary>
         /// <param name="addUserDto"></param>
         /// <returns></returns>
-        
+
         [HttpPost]
 
         public IActionResult AddUser([FromBody] AddUserDto addUserDto)
@@ -118,18 +123,20 @@ namespace VirtualShoppingStore.Controllers
 
             catch (Exception ex)
             {
-                return StatusCode(500, $"An error occurred: {ex.Message}");
+                return BadRequest(ex.Message);
             }
 
         }
 
         /// <summary>
-        ///  Delete User By ID
+        /// Deletes a user by ID.
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
+
         [HttpDelete]
         [Route("{id}")]
+
         public IActionResult DeleteUserById(int id)
         {
             try
@@ -146,25 +153,27 @@ namespace VirtualShoppingStore.Controllers
 
             catch (Exception ex)
             {
-                return StatusCode(500, $"An error occurred: {ex.Message}");
+                return BadRequest(ex.Message);
             }
 
         }
 
         /// <summary>
-        /// Update User detail
+        /// Updates a user's details via PATCH.
         /// </summary>
         /// <param name="id"></param>
         /// <param name="updateUserRequestDto"></param>
         /// <returns></returns>
         
         [HttpPatch]
+
         public IActionResult UpdateUserByPatch(int id, UpdateUserRequestDto updateUserRequestDto)
         {
+
             try
             {
-                var updated = userRepository.UpdateUserByPatch(id, updateUserRequestDto);
-                return Ok(updated);
+                var updatedUser = userRepository.UpdateUserByPatch(id, updateUserRequestDto);
+                return Ok(updatedUser);
             }
 
             catch (CustomException ex)
@@ -174,7 +183,7 @@ namespace VirtualShoppingStore.Controllers
 
             catch (Exception ex)
             {
-                return StatusCode(500, $"An error occurred: {ex.Message}");
+                return BadRequest(ex.Message);
             }
 
         }

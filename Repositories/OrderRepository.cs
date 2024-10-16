@@ -4,12 +4,13 @@ using VirtualShoppingStore.Models;
 using VirtualShoppingStore.Models.DTO.OrderDto;
 using VirtualShoppingStore.Models.DTO.OrderItemDto;
 using VirtualShoppingStore.Models.DTO.StatusDto;
+using VirtualShoppingStore.Enum;
 
 namespace VirtualShoppingStore.Repositories
 {
 
     /// <summary>
-    /// SQLOrderRepository
+    /// Repository class responsible for managing orders in the database.
     /// </summary>
 
     public class OrderRepository:IOrderRepository
@@ -19,9 +20,10 @@ namespace VirtualShoppingStore.Repositories
         private readonly ICartItemRepository cartItemRepository;
 
         /// <summary>
-        /// SQLOrderRepository constructor
+        /// Initializes a new instance of the <see cref="OrderRepository"/> class.
         /// </summary>
-        /// <param name="virtualShoppingStore"></param>
+        /// <param name="virtualShoppingStore">The database context to interact with the database.</param>
+        /// <param name="cartItemRepository">The repository to manage cart items.</param>
 
         public OrderRepository(VirtualShoppingStoreDbContext virtualShoppingStore, ICartItemRepository cartItemRepository)
         {
@@ -30,17 +32,19 @@ namespace VirtualShoppingStore.Repositories
         }
 
         /// <summary>
-        /// GetOrders
+        /// Retrieves all orders from the database.
         /// </summary>
-        /// <returns></returns>
-        
+        /// <returns>A list of <see cref="Order"/> objects.</returns>
+        /// <exception cref="CustomException">Thrown if no orders are found.</exception>
+
         public List<Order> GetOrders()
         {
+
             var data = virtualShoppingStore.Orders.ToList();
 
             if (data.Count==0)
             {
-                throw new CustomException("No order founds", 400);
+                throw new CustomException("Order not found", 404);
                 
             }
 
@@ -49,351 +53,133 @@ namespace VirtualShoppingStore.Repositories
         }
 
         /// <summary>
-        /// GetOrder by user id
+        /// Retrieves the order details for a specific user based on the user's ID.
         /// </summary>
-        /// <param name="UserId"></param>
-        /// <returns></returns>
-        /// <exception cref="NotImplementedException"></exception>
+        /// <param name="UserId">The ID of the user whose orders are being retrieved.</param>
+        /// <returns>The order associated with the given user.</returns>
+        /// <exception cref="CustomException">Thrown if no order is found for the provided user ID.</exception>
 
         public Order GetOrderById(int UserId)
         {
 
             var orderlist = virtualShoppingStore.Orders
                 //.Include(id=>id.StatusId)
-                .FirstOrDefault(x => x.UserId == UserId);
+                .FirstOrDefault(order => order.UserId == UserId);
 
             if (orderlist==null)
             {
-                throw new CustomException("No such data found with the given id",400);
+                throw new CustomException("Order not found",404);
             }
            
             return orderlist;
             
         }
 
-        ///// <summary>
-        ///// AddOrder
-        ///// </summary>
-        ///// <param name="addOrderDto"></param>
-        ///// <exception cref="Exception"></exception>
-        //public Order AddOrder(AddOrderDto addOrderDto)
-        //{
-
-        //    var userExists = virtualShoppingStore.Users.Any(x => x.UserId == addOrderDto.UserId);
-
-        //    if (!userExists)
-        //    {
-        //        throw new CustomException("User does not exist.",400);
-        //    }
-
-        //    var order = new Order
-        //    {
-        //        UserId = addOrderDto.UserId,
-        //        OrderDate = addOrderDto.OrderDate,
-        //        StatusId = 1, 
-        //        Orderitems = new List<Orderitem>(),
-        //        TotalAmount = 0 
-        //    };
-
-        //    foreach (var item in addOrderDto.Orderitems)
-        //    {
-        //        var product = virtualShoppingStore.Products.FirstOrDefault(p => p.ProductId == item.ProductID);
-
-        //        if (product == null)
-        //        {
-        //            throw new CustomException($"Product with ID {item.ProductID} does not exist.",400);
-        //        }
-
-        //        if (item.Quantity > product.StockQuantity)
-        //        {
-        //            throw new CustomException($"Insufficient stock for product {product.ProductName}.",400);
-        //        }
-
-        //        product.StockQuantity -= item.Quantity;
-        //        item.Price = product.Price;
-
-        //        var orderItem = new Orderitem
-        //        {
-        //            ProductId = item.ProductID,
-        //            Quantity = item.Quantity,
-        //            Price = product.Price
-        //        };
-
-        //        order.Orderitems.Add(orderItem);
-        //        order.TotalAmount += item.Price * item.Quantity; 
-
-        //    }
-
-        //    virtualShoppingStore.Orders.Add(order);
-        //    virtualShoppingStore.SaveChanges();
-        //    return order;
-
-        //}
-
         /// <summary>
-        /// DeleteOrder
+        /// Deletes an order and its associated order items from the database.
+        /// Updates the stock quantity for each product in the order.
         /// </summary>
-        /// <param name="id"></param>
-        /// <exception cref="Exception"></exception>
-        
+        /// <param name="id">The ID of the order to be deleted.</param>
+        /// <exception cref="CustomException">Thrown if the order or associated items are not found.</exception>
+
         public void DeleteOrder(int id)
         {
 
-            var order = virtualShoppingStore.Orders.FirstOrDefault(o => o.OrderId == id);
+            var order = virtualShoppingStore.Orders.FirstOrDefault(order => order.OrderId == id);
 
-            if (order == null)
+            if (order==null)
             {
-                throw new CustomException("Order not found.", 400);
+                throw new CustomException("Order not found", 404);
             }
 
-            else
+            var orderitem = virtualShoppingStore.Orderitems.Where(orderitem => orderitem.OrderId == id).ToList();
+
+            foreach (var orderItem in orderitem)
             {
-                virtualShoppingStore.Orders.Remove(order);
+               
+                var product = virtualShoppingStore.Products.FirstOrDefault(product => product.ProductId == orderItem.ProductId);
+
+                if (product != null)
+                {
+                    
+                    product.StockQuantity += orderItem.Quantity;
+                }
+
+                virtualShoppingStore.Orderitems.Remove(orderItem);
                 virtualShoppingStore.SaveChanges();
+
             }
 
         }
 
-
-
-        ///// <summary>
-        ///// UpdateOrder
-        ///// </summary>
-        ///// <param name="orderId"></param>
-        ///// <param name="UpdateOrderDto"></param>
-
-        //public void UpdateOrder(int orderId, UpdateOrderDto UpdateOrderDto)
-        //{
-
-        //    var existingOrder = virtualShoppingStore.Orders.Include(o => o.Orderitems).FirstOrDefault(o => o.OrderId == orderId);
-
-        //    if (existingOrder == null)
-        //    {
-        //        throw new CustomException("Order does not exist.",400);
-        //    }
-
-        //    if (UpdateOrderDto.OrderDate.HasValue)
-        //    {
-        //        existingOrder.OrderDate = UpdateOrderDto.OrderDate.Value;
-        //    }
-
-        //    if (UpdateOrderDto.StatusId.HasValue)
-        //    {
-        //        existingOrder.StatusId = UpdateOrderDto.StatusId.Value;
-        //    }
-
-        //    if (UpdateOrderDto.Orderitems != null)
-        //    {
-
-        //        foreach (var itemDto in UpdateOrderDto.Orderitems)
-        //        {
-
-        //            var existingOrderItem = existingOrder.Orderitems.FirstOrDefault(oi => oi.OrderItemId == itemDto.OrderItemId);
-
-        //            if (existingOrderItem == null)
-        //            {
-        //                throw new CustomException($"Order item with ID {itemDto.OrderItemId} does not exist.",400);
-        //            }
-
-        //            if (itemDto.ProductID.HasValue)
-        //            {
-
-        //                var product = virtualShoppingStore.Products.FirstOrDefault(p => p.ProductId == itemDto.ProductID.Value);
-
-        //                if (product == null)
-        //                {
-        //                    throw new CustomException($"Product with ID {itemDto.ProductID.Value} does not exist.",400);
-        //                }
-
-        //                existingOrderItem.ProductId = itemDto.ProductID.Value;
-        //                existingOrderItem.Price = product.Price;
-
-        //            }
-
-        //            if (itemDto.Quantity.HasValue)
-        //            {
-
-        //                if (existingOrderItem.Quantity != itemDto.Quantity.Value)
-        //                {
-
-        //                    var difference = itemDto.Quantity.Value - existingOrderItem.Quantity;
-
-        //                    var product = virtualShoppingStore.Products.FirstOrDefault(p => p.ProductId == existingOrderItem.ProductId);
-
-        //                    if (product == null || difference > product.StockQuantity)
-        //                    {
-        //                        throw new CustomException($"Insufficient stock for product {product?.ProductName}.",400);
-        //                    }
-
-        //                    product.StockQuantity -= difference;
-        //                    existingOrderItem.Quantity = itemDto.Quantity.Value;
-
-        //                }
-
-        //            }
-
-        //            if (itemDto.Price.HasValue)
-        //            {
-        //                existingOrderItem.Price = itemDto.Price.Value;
-        //            }
-
-        //        }
-
-        //    }
-
-        //    virtualShoppingStore.SaveChanges();
-
-        //}
-
-
-
-
-
-
-
-
-        ///// <summary>
-        ///// 
-        ///// </summary>
-        ///// <param name="userId"></param>
-        ///// <returns></returns>
-        ///// <exception cref="CustomException"></exception>
-        ///// <exception cref="Exception"></exception>
-
-        //public Order PlaceOrderByUserId(int userId)
-        //{
-        //    var checkuser = virtualShoppingStore.Users.FirstOrDefault(p => p.UserId == userId);
-
-        //    if (checkuser == null)
-        //    {
-        //        throw new CustomException("user with this userid not found", 400);
-        //    }
-
-        //    var cartitems = cartItemRepository.GetCartByUserId(userId);
-
-        //    if (cartitems == null || !cartitems.Any())
-        //        throw new Exception("No items in the cart");
-
-        //    var totalamount = cartitems.Sum(p => p.TotalAmount ?? 0);
-
-
-        //    var order = new Order()
-        //    {
-        //        UserId = userId,
-        //        OrderDate = DateTime.Now,
-        //        TotalAmount = totalamount,
-        //        StatusId = 1
-
-        //    };
-
-        //    virtualShoppingStore.Orders.Add(order);
-        //    virtualShoppingStore.SaveChanges();
-
-        //    foreach (var ci in cartitems)
-        //    {
-        //        // Fetch the product to update stock
-        //        var product = virtualShoppingStore.Products.FirstOrDefault(p => p.ProductId == ci.ProductId);
-        //        if (product == null)
-        //        {
-        //            throw new CustomException($"Product with ID {ci.ProductId} not found", 400);
-        //        }
-
-        //        // Check if there is enough stock available
-        //        if (product.StockQuantity < ci.Quantity)
-        //        {
-        //            throw new CustomException($"Not enough stock for product {product.ProductName}. Available: {product.StockQuantity}, Requested: {ci.Quantity}", 400);
-        //        }
-
-        //        // Reduce the stock
-        //        product.StockQuantity -= ci.Quantity;
-
-        //        // Create order item
-        //        var orderItem = new Orderitem
-        //        {
-        //            OrderId = order.OrderId,
-        //            Quantity = ci.Quantity,
-        //            ProductId = ci.ProductId,
-        //            Price = ci.TotalAmount ?? 0
-        //        };
-
-        //        virtualShoppingStore.Orderitems.Add(orderItem);
-        //    }
-
-        //    //virtualShoppingStore.Orderitems.AddRange(orderItems);
-        //    virtualShoppingStore.SaveChanges();
-
-        //    var placeorder = virtualShoppingStore.Orders.Include(o => o.Status)
-        //        .Include(o => o.Orderitems)
-        //         .ThenInclude(oi => oi.Product)
-        //         .FirstOrDefault(o => o.OrderId == order.OrderId);
-
-        //    virtualShoppingStore.Cartitems.RemoveRange(cartitems);
-        //    virtualShoppingStore.SaveChanges();
-
-
-
-        //    return order;
-
-        //}
-
-
         /// <summary>
-        /// PlaceOrderByUserId
+        /// Places an order for a user based on their cart items and user ID.
+        /// Deducts the stock for the ordered products and clears the cart items.
         /// </summary>
-        /// <param name="userId"></param>
-        /// <returns></returns>
-        /// <exception cref="CustomException"></exception>
-        /// <exception cref="Exception"></exception>
-        
+        /// <param name="userId">The ID of the user placing the order.</param>
+        /// <returns>An <see cref="OrderDT0"/> object containing the order details.</returns>
+        /// <exception cref="CustomException">Thrown if the user or products are invalid, or if there is insufficient stock.</exception>
+        /// <exception cref="Exception">Thrown if the cart is empty or another general error occurs.</exception>
+
         public OrderDT0 PlaceOrderByUserId(int userId)
         {
 
-            var checkuser = virtualShoppingStore.Users.FirstOrDefault(p => p.UserId == userId);
+            var isUserValid = virtualShoppingStore.Users.Any(user => user.UserId == userId);
 
-            if (checkuser == null)
+            if (!isUserValid)
             {
-                throw new CustomException("User with this userId not found", 400);
+                throw new CustomException("User with this userId not found", 404);
             }
 
-            var cartitems = cartItemRepository.GetCartByUserId(userId);
+            var cartItems = cartItemRepository.GetCartByUserId(userId);
 
-            if (cartitems == null || !cartitems.Any())
-                throw new Exception("No items in the cart");
+            if (cartItems == null || !cartItems.Any())
+            {
+                throw new CustomException("No items in the cart",404);
+            }
 
-            var totalAmount = cartitems.Sum(p => p.TotalAmount ?? 0);
+            foreach (var cartEntry in cartItems)
+            {
+
+                var product = virtualShoppingStore.Products.FirstOrDefault(product => product.ProductId == cartEntry.ProductId);
+
+                if (product == null)
+                {
+                    throw new CustomException($"Product with ID {cartEntry.ProductId} not found", 404);
+                }
+
+                if (product.StockQuantity < cartEntry.Quantity)
+                {
+                    throw new CustomException($"Not enough stock for product {product.ProductName}. Available: {product.StockQuantity}, Requested: {cartEntry.Quantity}", 400);
+                }
+
+            }
+
+            var totalAmount = cartItems.Sum(cartitem => cartitem.TotalAmount ?? 0);
 
             var order = new Order()
             {
                 UserId = userId,
                 OrderDate = DateTime.Now,
                 TotalAmount = totalAmount,
-                StatusId = 1
+                StatusId = (int)Enum.OrderStatus.Pending
             };
 
             virtualShoppingStore.Orders.Add(order);
             virtualShoppingStore.SaveChanges();
 
-            foreach (var ci in cartitems)
+            foreach (var cartEntry in cartItems)
             {
-                var product = virtualShoppingStore.Products.FirstOrDefault(p => p.ProductId == ci.ProductId);
-                if (product == null)
-                {
-                    throw new CustomException($"Product with ID {ci.ProductId} not found", 400);
-                }
+                var product = virtualShoppingStore.Products.FirstOrDefault(product => product.ProductId == cartEntry.ProductId);
 
-                if (product.StockQuantity < ci.Quantity)
-                {
-                    throw new CustomException($"Not enough stock for product {product.ProductName}. Available: {product.StockQuantity}, Requested: {ci.Quantity}", 400);
-                }
-
-                product.StockQuantity -= ci.Quantity;
+                product!.StockQuantity -= cartEntry.Quantity;
 
                 var orderItem = new Orderitem
                 {
                     OrderId = order.OrderId,
-                    Quantity = ci.Quantity,
-                    ProductId = ci.ProductId,
-                    Price = ci.TotalAmount ?? 0
+                    Quantity = cartEntry.Quantity,
+                    ProductId = cartEntry.ProductId,
+                    Price = cartEntry.TotalAmount ?? 0
                 };
 
                 virtualShoppingStore.Orderitems.Add(orderItem);
@@ -427,12 +213,13 @@ namespace VirtualShoppingStore.Repositories
                     }).ToList()
                 }).FirstOrDefault();
 
-            virtualShoppingStore.Cartitems.RemoveRange(cartitems);
+            virtualShoppingStore.Cartitems.RemoveRange(cartItems);
             virtualShoppingStore.SaveChanges();
 
             return orderDTO!;
 
         }
+
     }
 
 }

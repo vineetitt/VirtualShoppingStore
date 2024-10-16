@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using VirtualShoppingStore.Models;
@@ -15,6 +16,8 @@ namespace VirtualShoppingStore.Controllers
 
     [ApiController]
 
+    //[Authorize]
+
     public class ProductController : ControllerBase
     {
         private readonly IProductRepository productRepository;
@@ -29,20 +32,30 @@ namespace VirtualShoppingStore.Controllers
             this.productRepository = productRepository;
         }
 
+
         /// <summary>
-        /// Show all Products
+        /// Retrieves all products with optional filtering and pagination.
         /// </summary>
-        /// <returns></returns>
-        
+        /// <param name="categoryId"></param>
+        /// <param name="pageNumber">The page number to retrieve (default is 1).</param>
+        /// <param name="pagesize">The number of products per page (default is 50).</param>
+        /// <returns>A list of products.</returns>
+
         [HttpGet]
 
-        public IActionResult GetAllProduct([FromQuery] string? filteron, [FromQuery] string? queryname, [FromQuery] int pagenumber=1, [FromQuery] int pagesize=50)
+        public IActionResult GetAllProducts([FromQuery] int? categoryId, [FromQuery] int pageNumber=1, [FromQuery] int pagesize=50)
         {
             
             try
             {
-                var data = productRepository.GetAllProduct(filteron, queryname, pagenumber, pagesize );
+                var data = productRepository.GetAllProducts(categoryId, pageNumber, pagesize );
+
+                var totalProducts = productRepository.GetProductCount(categoryId);
+
+                var maxPage = (int)Math.Ceiling((double)totalProducts / pagesize);
+
                 var responseProductDto = new List<ResponseProductDto>();
+
                 foreach (var item in data)
                 {
                     responseProductDto.Add(new ResponseProductDto()
@@ -59,7 +72,7 @@ namespace VirtualShoppingStore.Controllers
 
                 }
 
-                return Ok(responseProductDto);
+                return Ok(new { data =  responseProductDto, maxPage });
             }
 
             catch (CustomException ex)
@@ -69,17 +82,17 @@ namespace VirtualShoppingStore.Controllers
 
             catch (Exception ex)
             {
-                return StatusCode(500, $"An error occurred: {ex.Message}");
+                return BadRequest(ex.Message);
             }
 
         }
 
         /// <summary>
-        /// Add Product
+        /// Adds a new product.
         /// </summary>
-        /// <param name="addProductDto"></param>
-        /// <returns></returns>
-        
+        /// <param name="addProductDto">The product data to add.</param>
+        /// <returns>An IActionResult indicating the outcome of the operation.</returns>
+
         [HttpPost]
 
         public IActionResult AddNewProduct([FromBody] AddProductDto addProductDto)
@@ -97,15 +110,15 @@ namespace VirtualShoppingStore.Controllers
 
             catch (Exception ex)
             {
-                return StatusCode(500, $"An error occurred: {ex.Message}");
+                return BadRequest(ex.Message);
             }
         }
 
         /// <summary>
-        /// Delete Product By Id
+        /// Marks a product as deleted by its ID.
         /// </summary>
-        /// <param name="id"></param>
-        /// <returns></returns>
+        /// <param name="id">The ID of the product to delete.</param>
+        /// <returns>An IActionResult indicating the outcome of the operation.</returns>
         
         [HttpDelete]
 
@@ -126,28 +139,28 @@ namespace VirtualShoppingStore.Controllers
 
             catch (Exception ex) 
             {
-                return StatusCode(500, $"An error occurred: {ex.Message}");
+                return BadRequest(ex.Message);
             }
 
         }
 
         /// <summary>
-        /// Update Product By id
+        /// Updates a product's details via PATCH.
         /// </summary>
-        /// <param name="id"></param>
-        /// <param name="patchProductDto"></param>
-        /// <returns></returns>
-        
+        /// <param name="id">The ID of the product to update.</param>
+        /// <param name="patchProductDto">The product data to update.</param>
+        /// <returns>The updated product data.</returns>
+
         [HttpPatch]
 
         [Route("{id}")]
 
-        public IActionResult UpdateProductByid(int id, PatchProductDto patchProductDto )
+        public IActionResult UpdateProductById(int id, [FromBody]PatchProductDto patchProductDto )
         {
            
             try
             {
-                var response = productRepository.UpdateProductByid(id, patchProductDto);
+                var response = productRepository.UpdateProductById(id, patchProductDto);
                 return Ok(response);
             }
 
@@ -158,17 +171,16 @@ namespace VirtualShoppingStore.Controllers
 
             catch (Exception ex)
             {
-                return StatusCode(500, $"An error occurred: {ex.Message}");
+                return BadRequest(ex.Message);
             }
             
         }
 
         /// <summary>
-        /// GetProductById
+        /// Retrieves a product by its ID.
         /// </summary>
-        /// <param name="productId"></param>
-        /// <returns></returns>
-        /// <exception cref="Exception"></exception>
+        /// <param name="productId">The ID of the product to retrieve.</param>
+        /// <returns>The product data.</returns>
 
         [HttpGet]
 
@@ -189,7 +201,7 @@ namespace VirtualShoppingStore.Controllers
 
             catch (Exception ex)
             {
-                return StatusCode(500, $"An error occurred: {ex.Message}");
+                return BadRequest(ex.Message);
             }
             
         }

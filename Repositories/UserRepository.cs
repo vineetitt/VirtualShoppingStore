@@ -11,35 +11,39 @@ namespace VirtualShoppingStore.Repositories
     /// <summary>
     /// UserRepository class
     /// </summary>
+    
     public class UserRepository : IUserRepository
     {
         private readonly VirtualShoppingStoreDbContext virtualShoppingStoreDbContext;
+
         /// <summary>
         /// 
         /// </summary>
         /// <param name="virtualShoppingStoreDbContext"></param>
+        
         public UserRepository(VirtualShoppingStoreDbContext virtualShoppingStoreDbContext)
         {
             this.virtualShoppingStoreDbContext = virtualShoppingStoreDbContext;
         }
 
         /// <summary>
-        /// Get all User
+        /// Get All User
         /// </summary>
         /// <returns></returns>
         /// <exception cref="NotImplementedException"></exception>
         
-        public List<User> GetAllUser()
+        public List<User> GetAllUsers(int pageNumber = 1,  int pageSize = 50)
         {
-            var allUserData = virtualShoppingStoreDbContext.Users.Where(e => e.Deactive == false).ToList();
+            var recordsToSkip = (pageNumber - 1) * pageSize; 
 
+            var filteredUsers = virtualShoppingStoreDbContext.Users.Where(user => user.Deactive == false).Skip(recordsToSkip).Take(pageSize).ToList();
 
-            if (!allUserData.Any())
+            if (!filteredUsers.Any())
             {
-                throw new CustomException("No Users found",400);
+                throw new CustomException("No Users found", 404);
             }
 
-            return allUserData;
+            return filteredUsers;
 
         }
 
@@ -48,38 +52,46 @@ namespace VirtualShoppingStore.Repositories
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        public User GetusersbyId(int id)
+        
+        public User GetUserbyId(int id)
         {
-            var users = virtualShoppingStoreDbContext.Users.FirstOrDefault(a=>a.Deactive == false && a.UserId == id);
-            if (users==null) {
-                throw new CustomException("No User found with this id",404);
+            var user = virtualShoppingStoreDbContext.Users.FirstOrDefault(user => user.Deactive == false && user.UserId == id);
+
+            if (user==null) 
+            {
+                throw new CustomException("User not found",404);
             }
-            return users;
+            return user;
+
         }
 
         /// <summary>
         /// Add User
         /// </summary>
-        /// <param name="user"></param>
+        /// <param name="newUser"></param>
         /// <returns></returns>
-        public void AddUser(User user)
-        {
-            var exisitingUser = virtualShoppingStoreDbContext.Users.FirstOrDefault(a=>a.Email == user.Email || a.Username == user.Username);
-            if (exisitingUser==null)
-            {
 
-                virtualShoppingStoreDbContext.Users.Add(user);
+        public void AddUser(User newUser)
+        {
+            var existingUser = virtualShoppingStoreDbContext.Users.FirstOrDefault(user=> user.Email == newUser.Email || user.Username == newUser.Username);
+
+            if (existingUser==null)
+            {
+                virtualShoppingStoreDbContext.Users.Add(newUser);
                 virtualShoppingStoreDbContext.SaveChanges();
             }
             else
             {
-                if (exisitingUser.Deactive==true){
-                    exisitingUser.Deactive = false;
+
+                if (existingUser.Deactive==true){
+
+                    existingUser.Deactive = false;
                     virtualShoppingStoreDbContext.SaveChanges();
+
                 }
                 else
                 {
-                    throw new CustomException("User with this email or username already exists",400);
+                    throw new CustomException("User already exists", 400);
                 }
                 
             }
@@ -93,8 +105,8 @@ namespace VirtualShoppingStore.Repositories
         
         public void DeleteUserById(int id)
         {
-            var existingUser = GetusersbyId(id);
-            existingUser.Deactive = true;
+            var userToDelete = GetUserbyId(id);
+            userToDelete.Deactive = true;
             virtualShoppingStoreDbContext.SaveChanges();
         }
 
@@ -109,24 +121,24 @@ namespace VirtualShoppingStore.Repositories
         public User UpdateUserByPatch(int id, UpdateUserRequestDto updateUserRequestDto )
         {
 
-            var existinguser = virtualShoppingStoreDbContext.Users.Find(id);
+            var userToUpdate = virtualShoppingStoreDbContext.Users.Find(id);
 
-            if (existinguser == null)
+            if (userToUpdate == null)
             {
-                throw new CustomException("No existing user found with this id",400);
+                throw new CustomException("User not found", 400);
             }
 
-            existinguser.Username = updateUserRequestDto.Username ?? existinguser.Username;
-            existinguser.FirstName = updateUserRequestDto.FirstName ?? existinguser.FirstName;
-            existinguser.LastName = updateUserRequestDto.LastName ?? existinguser.LastName;
-            existinguser.Email = updateUserRequestDto.Email ?? existinguser.Email;
-            existinguser.City = updateUserRequestDto.City ?? existinguser.City;
-            existinguser.Address = updateUserRequestDto.Address ?? existinguser.Address;
-            existinguser.PasswordHash = updateUserRequestDto.PasswordHash ?? existinguser.PasswordHash;
-            existinguser.PhoneNo = updateUserRequestDto.PhoneNo ?? existinguser.PhoneNo;
+            userToUpdate.Username = !string.IsNullOrEmpty(updateUserRequestDto.Username) ? updateUserRequestDto.Username : userToUpdate.Username;
+            userToUpdate.FirstName = !string.IsNullOrEmpty(updateUserRequestDto.FirstName) ? updateUserRequestDto.FirstName : userToUpdate.FirstName;
+            userToUpdate.LastName = !string.IsNullOrEmpty(updateUserRequestDto.LastName) ? updateUserRequestDto.LastName : userToUpdate.LastName;
+            userToUpdate.Email = !string.IsNullOrEmpty(updateUserRequestDto.Email) ? updateUserRequestDto.Email : userToUpdate.Email;
+            userToUpdate.City = !string.IsNullOrEmpty(updateUserRequestDto.City) ? updateUserRequestDto.City : userToUpdate.City;
+            userToUpdate.Address = !string.IsNullOrEmpty(updateUserRequestDto.Address) ? updateUserRequestDto.Address : userToUpdate.Address;
+            userToUpdate.PasswordHash = !string.IsNullOrEmpty(updateUserRequestDto.PasswordHash) ? updateUserRequestDto.PasswordHash : userToUpdate.PasswordHash;
+            userToUpdate.PhoneNo = !string.IsNullOrEmpty(updateUserRequestDto.PhoneNo) ? updateUserRequestDto.PhoneNo : userToUpdate.PhoneNo;
 
             virtualShoppingStoreDbContext.SaveChanges();
-            return existinguser;
+            return userToUpdate;
 
         }
 

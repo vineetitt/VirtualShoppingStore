@@ -7,47 +7,51 @@ using VirtualShoppingStore.Models;
 namespace VirtualShoppingStore.Controllers
 {
     /// <summary>
-    /// 
+    /// Controller for managing status entities.
     /// </summary>
+
     [Route("api/[controller]")]
     [ApiController]
+
     public class StatusController : ControllerBase
     {
         private readonly IStatusRepository statusRepository;
 
         /// <summary>
-        /// 
+        /// Initializes a new instance of the <see cref="StatusController"/> class.
         /// </summary>
-        /// <param name="statusRepository"></param>
+        /// <param name="statusRepository">The repository to manage status entities.</param>
         public StatusController(IStatusRepository statusRepository)
         {
             this.statusRepository = statusRepository;
         }
 
-
         /// <summary>
-        /// Get All Status
+        /// Retrieves all statuses.
         /// </summary>
-        /// <returns></returns>
+        /// <returns>A list of <see cref="ResponseStatusDto"/> objects representing all statuses.</returns>
+        /// <response code="200">Returns the list of statuses.</response>
+        /// <response code="400">If an unexpected error occurs.</response>
+
         [HttpGet]
 
         public IActionResult GetAllStatus()
         {
             try
             {
-                var statusdata = statusRepository.GetAllStatus();
-                var statuslist= new List<ResponseStatusDto>();
+                var statusData = statusRepository.GetAllStatus();
+                var statusList= new List<ResponseStatusDto>();
 
-                foreach (var status in statusdata) {
-                    statuslist.Add(new ResponseStatusDto()
+                foreach (var status in statusData)
+                {
+                    statusList.Add(new ResponseStatusDto()
                     {
                         StatusId = status.StatusId,
                         StatusName = status.StatusName,
                     });
-
                 }
 
-                return Ok(statuslist); 
+                return Ok(statusList); 
             }
 
             catch (CustomException ex)
@@ -55,26 +59,31 @@ namespace VirtualShoppingStore.Controllers
                 return StatusCode(ex.StatusCode, ex.Message);
             }
 
-            catch (Exception ex) { 
-                return Ok(ex.Message);
-
+            catch (Exception ex)
+            { 
+                return BadRequest(ex.Message);
             }
 
         }
 
         /// <summary>
-        /// Get status by id
+        /// Retrieves a status by its ID.
         /// </summary>
-        /// <param name="id"></param>
-        /// <returns></returns>
+        /// <param name="id">The ID of the status to retrieve.</param>
+        /// <returns>The <see cref="ResponseStatusDto"/> object representing the status.</returns>
+        /// <response code="200">Returns the status.</response>
+        /// <response code="400">If an unexpected error occurs.</response>
+        /// <response code="404">If the status with the specified ID is not found.</response>
+
         [HttpGet]
         [Route("{id}")]
+
         public IActionResult GetStatus(int id)
         {
             try
             {
-                var getdata = statusRepository.GetStatusById(id);
-                return Ok(getdata);
+                var getData = statusRepository.GetStatusById(id);
+                return Ok(getData);
             }
 
             catch (CustomException ex)
@@ -82,19 +91,25 @@ namespace VirtualShoppingStore.Controllers
                 return StatusCode(ex.StatusCode, ex.Message);
             }
 
-            catch (Exception ex) { 
+            catch (Exception ex) 
+            { 
                 return BadRequest(ex.Message);
             }
         }
 
         /// <summary>
-        /// ADD status
+        /// Adds a new status.
         /// </summary>
-        /// <param name="statusName"></param>
-        /// <returns></returns>
+        /// <param name="statusName">The name of the status to add.</param>
+        /// <returns>A confirmation message.</returns>
+        /// <response code="200">Returns a success message.</response>
+        /// <response code="400">If an unexpected error occurs.</response>
+
         [HttpPost]
+
         public IActionResult AddStatus(string statusName)
         {
+
             try
             {
                 statusRepository.AddStatus(statusName);
@@ -106,16 +121,21 @@ namespace VirtualShoppingStore.Controllers
                 return StatusCode(ex.StatusCode, ex.Message);
             }
 
-            catch (Exception ex) { 
+            catch (Exception ex)
+            { 
                 return BadRequest(ex.Message);
             }
+
         }
 
         /// <summary>
-        /// Delete Status by status Id
+        /// Deletes a status by its ID.
         /// </summary>
-        /// <param name="statusId"></param>
-        /// <returns></returns>
+        /// <param name="statusId">The ID of the status to delete.</param>
+        /// <returns>A confirmation message.</returns>
+        /// <response code="200">Returns a success message.</response>
+        /// <response code="400">If an unexpected error occurs.</response>
+        /// <response code="404">If the status with the specified ID is not found.</response>
 
         [HttpDelete]
         [Route("{statusId:int}")]
@@ -125,9 +145,7 @@ namespace VirtualShoppingStore.Controllers
             try
             {
                 statusRepository.DeleteStatus(statusId);
-                
                 return Ok();
-
             }
 
             catch (CustomException ex)
@@ -135,24 +153,30 @@ namespace VirtualShoppingStore.Controllers
                 return StatusCode(ex.StatusCode, ex.Message);
             }
 
-            catch (Exception ex) {
+            catch (Exception ex)
+            {
                 return BadRequest(ex.Message);
             }
         }
 
         /// <summary>
-        /// Update Status Name
+        /// Updates the name of a status by its ID.
         /// </summary>
-        /// <param name="id"></param>
-        /// <param name="statusname"></param>
-        /// <returns></returns>
+        /// <param name="id">The ID of the status to update.</param>
+        /// <param name="statusname">The new name of the status.</param>
+        /// <returns>The updated <see cref="ResponseStatusDto"/> object.</returns>
+        /// <response code="200">Returns the updated status.</response>
+        /// <response code="400">If an unexpected error occurs.</response>
+        /// <response code="404">If the status with the specified ID is not found.</response>
+
         [HttpPatch]
+
         public IActionResult UpdateStatus(int id, string statusname)
         {
             try
             {
-                var newstatusname = statusRepository.UpdateStatus(id, statusname);
-                return Ok(newstatusname);
+                var newStatusName = statusRepository.UpdateStatus(id, statusname);
+                return Ok(newStatusName);
             }
 
             catch (CustomException ex)
