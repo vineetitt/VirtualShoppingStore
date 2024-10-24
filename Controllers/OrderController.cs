@@ -150,7 +150,7 @@ namespace VirtualShoppingStore.Controllers
 
             catch(CustomException ex)
             {
-                throw new Exception(ex.Message);
+                return BadRequest(ex.Message);
             }
 
             catch(Exception ex)

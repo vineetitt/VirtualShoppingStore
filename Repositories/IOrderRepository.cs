@@ -24,7 +24,7 @@ namespace VirtualShoppingStore.Repositories
         /// <param name="UserId">The ID of the user whose order is to be retrieved.</param>
         /// <returns>An <see cref="Order"/> object representing the order for the specified user.</returns>
 
-        public Order GetOrderById(int UserId);
+        public List<Order> GetOrderById(int UserId);
 
         /// <summary>
         /// Deletes an order by its ID.

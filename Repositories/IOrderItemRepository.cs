@@ -35,7 +35,9 @@ namespace VirtualShoppingStore.Repositories
         /// <response code="200">Returns the list of all order items.</response>
         /// <response code="404">If no order items are found in the system.</response>
         public List<Orderitem> ShowAllOrderItem();
-        
+
+        public List<Orderitem> GetOrderItemsByUserId(int userId);
     }
 
 }
+

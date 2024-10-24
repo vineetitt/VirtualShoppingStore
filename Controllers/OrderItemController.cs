@@ -125,6 +125,35 @@ namespace VirtualShoppingStore.Controllers
             }
 
         }
+        [HttpGet]
+        [Route("userId/{userId}")]
+
+        public IActionResult GetOrderItemsByUserId(int userId)
+        {
+            try
+            {
+
+                var data = orderItemRepository.GetOrderItemsByUserId(userId);
+                if (data == null || !data.Any())
+                {
+                    return NotFound($"No order items found for User ID {userId}.");
+                }
+
+                return Ok(data);
+
+            }
+
+            catch (CustomException ex)
+            {
+                return StatusCode(ex.StatusCode, ex.Message);
+            }
+
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+
+        }
 
     }
 

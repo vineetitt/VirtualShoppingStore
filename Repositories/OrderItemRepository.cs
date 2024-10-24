@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using VirtualShoppingStore.Models;
 using VirtualShoppingStore.Models.DTO.OrderItemDto;
 
@@ -103,6 +104,19 @@ namespace VirtualShoppingStore.Repositories
 
         }
 
+        public List<Orderitem> GetOrderItemsByUserId(int userId)
+        {
+
+            var orderItems = virtualShoppingStore.Orderitems.Include(o => o.Order).Include(o=>o.Order.Status).Where(orderitem => orderitem.Order.UserId == userId).ToList();
+
+            if (orderItems.Count() == 0)
+            {
+                throw new CustomException("order item not  found", 404);
+            }
+
+            return orderItems;
+
+        }
     }
 
 }

@@ -4,75 +4,35 @@ using Microsoft.EntityFrameworkCore;
 
 namespace VirtualShoppingStore.Models;
 
-/// <summary>
-/// class VirtualShoppingStoreDbContext
-/// </summary>
 public partial class VirtualShoppingStoreDbContext : DbContext
 {
-    /// <summary>
-    /// VirtualShoppingStoreDbContext 
-    /// </summary>
-
     public VirtualShoppingStoreDbContext()
     {
     }
 
-    /// <summary>
-    /// 
-    /// </summary>
-    /// <param name="options"></param>
-    
     public VirtualShoppingStoreDbContext(DbContextOptions<VirtualShoppingStoreDbContext> options)
         : base(options)
     {
     }
 
-    /// <summary>
-    /// Cartitems
-    /// </summary>
-
     public virtual DbSet<Cartitem> Cartitems { get; set; }
 
-    /// <summary>
-    /// 
-    /// </summary>
-    
     public virtual DbSet<Category> Categories { get; set; }
 
-    /// <summary>
-    /// Orders
-    /// </summary>
-    
     public virtual DbSet<Order> Orders { get; set; }
 
-    /// <summary>
-    /// Orderitems
-    /// </summary>
-    
     public virtual DbSet<Orderitem> Orderitems { get; set; }
 
-    /// <summary>
-    /// Products
-    /// </summary>
-    
     public virtual DbSet<Product> Products { get; set; }
 
-    /// <summary>
-    /// Statuses
-    /// </summary>
     public virtual DbSet<Status> Statuses { get; set; }
 
-    /// <summary>
-    /// Users
-    /// </summary>
-    /// 
     public virtual DbSet<User> Users { get; set; }
 
-    /// <summary>
-    /// 
-    /// </summary>
-    /// <param name="modelBuilder"></param>
-    /// 
+    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+#warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see https://go.microsoft.com/fwlink/?LinkId=723263.
+        => optionsBuilder.UseSqlServer("Server=ITT-VINEET-YA\\SQLEXPRESS; Database=VirtualShoppingStoreDb;Trusted_Connection=true;TrustServerCertificate=true;");
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<Cartitem>(entity =>
@@ -167,6 +127,7 @@ public partial class VirtualShoppingStoreDbContext : DbContext
                 .HasDefaultValueSql("(getdate())")
                 .HasColumnType("datetime")
                 .HasColumnName("CreatedAT");
+            entity.Property(e => e.ImageUrl).HasMaxLength(500);
             entity.Property(e => e.IsDeleted).HasDefaultValue(false);
             entity.Property(e => e.Price).HasColumnType("decimal(10, 2)");
             entity.Property(e => e.ProductName).HasMaxLength(100);
@@ -222,5 +183,4 @@ public partial class VirtualShoppingStoreDbContext : DbContext
     }
 
     partial void OnModelCreatingPartial(ModelBuilder modelBuilder);
-
 }

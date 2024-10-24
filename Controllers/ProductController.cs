@@ -22,6 +22,7 @@ namespace VirtualShoppingStore.Controllers
     {
         private readonly IProductRepository productRepository;
 
+
         /// <summary>
         /// ProductController constructor
         /// </summary>
@@ -42,7 +43,7 @@ namespace VirtualShoppingStore.Controllers
         /// <returns>A list of products.</returns>
 
         [HttpGet]
-
+        [AllowAnonymous]
         public IActionResult GetAllProducts([FromQuery] int? categoryId, [FromQuery] int pageNumber=1, [FromQuery] int pagesize=50)
         {
             
@@ -66,6 +67,7 @@ namespace VirtualShoppingStore.Controllers
                         StockQuantity = item.StockQuantity,
                         ProductId = item.ProductId,
                         CategoryId = item.CategoryId,
+                        ImageUrl = item.ImageUrl,
                         CreatedAt = item.CreatedAt,
                         IsDeleted = item.IsDeleted,
                     });

@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using VirtualShoppingStore.Models;
@@ -37,7 +38,7 @@ namespace VirtualShoppingStore.Controllers
 
         [HttpGet]
         [Route("{userId}")]
-
+        //[Authorize]
         public IActionResult GetCartByUserId(int userId)
         {
 
@@ -66,8 +67,11 @@ namespace VirtualShoppingStore.Controllers
         /// <param name="addToCartDto">The DTO containing details of the product to be added to the cart.</param>
         /// <returns>A status indicating the success or failure of the operation.</returns>
 
-        [HttpPost]
 
+
+        [Authorize]
+        [HttpPost]
+        
         public IActionResult AddToCart(AddToCartDto addToCartDto)
         {
 

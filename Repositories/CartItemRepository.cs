@@ -79,11 +79,19 @@ namespace VirtualShoppingStore.Repositories
             }
 
             var existingcartitem = virtualShoppingStoreDbContext.Cartitems.FirstOrDefault(cartitem=>cartitem.UserId == addToCartDto.UserId && cartitem.ProductId== addToCartDto.ProductId);
-
             if (existingcartitem != null)
             { 
-                existingcartitem.Quantity += addToCartDto.Quantity;
-                existingcartitem.TotalAmount= existingcartitem.Quantity*product.Price;
+                var currentQuantity = existingcartitem.Quantity;
+                var reqQuatity = addToCartDto.Quantity;
+                if (currentQuantity + reqQuatity > 0)
+                {
+                    existingcartitem.Quantity += addToCartDto.Quantity;
+                    existingcartitem.TotalAmount = existingcartitem.Quantity * product.Price;
+                }
+                else
+                {
+                    throw new CustomException("Product quantity in the cart cannot be less than 1", 400);
+                }
             }
 
             else

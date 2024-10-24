@@ -14,6 +14,8 @@ namespace VirtualShoppingStore.Repositories
     
     public class UserRepository : IUserRepository
     {
+
+        bool flag = false;
         private readonly VirtualShoppingStoreDbContext virtualShoppingStoreDbContext;
 
         /// <summary>
@@ -79,6 +81,7 @@ namespace VirtualShoppingStore.Repositories
             {
                 virtualShoppingStoreDbContext.Users.Add(newUser);
                 virtualShoppingStoreDbContext.SaveChanges();
+                
             }
             else
             {
@@ -142,6 +145,32 @@ namespace VirtualShoppingStore.Repositories
 
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="userName"></param>
+        /// <returns></returns>
+        /// <exception cref="CustomException"></exception>
+        /// 
+        public User GetUserByUserName(string userName)
+        {
+            var userDetail = virtualShoppingStoreDbContext.Users.FirstOrDefault(user=> user.Username == userName);
+            if (userDetail != null)
+                return userDetail;
+            else
+                throw new CustomException("user not found", 400);
+        }
+
+        //public void  SignUpUser(User newUser)
+        //{
+        //    var checkUser = virtualShoppingStoreDbContext.Users.Where(user=>user.Username == newUser.Username || user.Username== newUser.Email);
+        //    if(checkUser==null)
+        //    {
+        //        AddUser(newUser);
+                
+        //    }
+            
+        //}
     }
 
 }

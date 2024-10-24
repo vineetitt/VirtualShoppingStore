@@ -49,6 +49,18 @@ namespace VirtualShoppingStore.Repositories
 
         public User UpdateUserByPatch(int id, UpdateUserRequestDto updateUserRequestDto);
 
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="userName"></param>
+        /// <returns></returns>
+        public User GetUserByUserName(string userName);
+
+
+
+        //public void SignUpUser(User newUser);
+
     }
 
 }

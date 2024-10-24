@@ -53,7 +53,7 @@
         public DateTime? CreatedAt { get; set; }
 
 
-
+        public string? ImageUrl { get; set; }
         /// <summary>
         /// 
         /// </summary>

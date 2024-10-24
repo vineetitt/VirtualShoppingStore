@@ -59,14 +59,15 @@ namespace VirtualShoppingStore.Repositories
         /// <returns>The order associated with the given user.</returns>
         /// <exception cref="CustomException">Thrown if no order is found for the provided user ID.</exception>
 
-        public Order GetOrderById(int UserId)
+        public List<Order> GetOrderById(int UserId)
         {
 
             var orderlist = virtualShoppingStore.Orders
-                //.Include(id=>id.StatusId)
-                .FirstOrDefault(order => order.UserId == UserId);
+                .Include(o => o.Status)
+                .Where(order => order.UserId == UserId)
+                .ToList();
 
-            if (orderlist==null)
+            if (orderlist.Count() ==0)
             {
                 throw new CustomException("Order not found",404);
             }
