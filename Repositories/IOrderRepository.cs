@@ -41,6 +41,15 @@ namespace VirtualShoppingStore.Repositories
 
         OrderDT0 PlaceOrderByUserId(int userId);
 
+
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <returns></returns>
+        OrderDT0 DirectPlaceOrderByUserId(int userId, int productId, int quantity);
+
     }
 
 }

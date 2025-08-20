@@ -65,5 +65,8 @@
         /// 
         /// </summary>
         public bool? IsDeleted { get; set; }
+
+
+        public string Size {  get; set; }
     }
 }

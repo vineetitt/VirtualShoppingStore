@@ -43,5 +43,7 @@ namespace VirtualShoppingStore.Models.DTO.ProductDto
         /// </summary>
 
         public int? CategoryId { get; set; }
+
+        public string Size { get; set; }
     }
 }

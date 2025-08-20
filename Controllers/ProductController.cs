@@ -70,6 +70,7 @@ namespace VirtualShoppingStore.Controllers
                         ImageUrl = item.ImageUrl,
                         CreatedAt = item.CreatedAt,
                         IsDeleted = item.IsDeleted,
+                        Size = item.Size,
                     });
 
                 }

@@ -131,6 +131,7 @@ public partial class VirtualShoppingStoreDbContext : DbContext
             entity.Property(e => e.IsDeleted).HasDefaultValue(false);
             entity.Property(e => e.Price).HasColumnType("decimal(10, 2)");
             entity.Property(e => e.ProductName).HasMaxLength(100);
+            entity.Property(e => e.Size).HasMaxLength(50);
             entity.Property(e => e.UpdatedAt)
                 .HasDefaultValueSql("(getdate())")
                 .HasColumnType("datetime");

@@ -212,7 +212,6 @@ namespace VirtualShoppingStore.Controllers
         public IActionResult GetUserByUserName([FromQuery]string userName)
         {
 
-
             try
             {
                 var getUser = userRepository.GetUserByUserName(userName);

@@ -161,16 +161,6 @@ namespace VirtualShoppingStore.Repositories
                 throw new CustomException("user not found", 400);
         }
 
-        //public void  SignUpUser(User newUser)
-        //{
-        //    var checkUser = virtualShoppingStoreDbContext.Users.Where(user=>user.Username == newUser.Username || user.Username== newUser.Email);
-        //    if(checkUser==null)
-        //    {
-        //        AddUser(newUser);
-                
-        //    }
-            
-        //}
     }
 
 }

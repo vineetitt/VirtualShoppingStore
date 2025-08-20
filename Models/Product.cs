@@ -25,6 +25,8 @@ public partial class Product
 
     public string? ImageUrl { get; set; }
 
+    public string? Size { get; set; }
+
     public virtual ICollection<Cartitem> Cartitems { get; set; } = new List<Cartitem>();
 
     public virtual Category? Category { get; set; }

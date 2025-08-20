@@ -11,7 +11,7 @@ namespace VirtualShoppingStore.Controllers
     /// <summary>
     /// Handles HTTP requests related to orders in the VirtualShoppingStore application.
     /// </summary>
-    
+
     [Route("api/[controller]")]
     [ApiController]
 
@@ -148,16 +148,38 @@ namespace VirtualShoppingStore.Controllers
                 return Ok(placeorder);
             }
 
-            catch(CustomException ex)
+            catch (CustomException ex)
             {
                 return BadRequest(ex.Message);
             }
 
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 return BadRequest(ex.Message);
             }
 
+        }
+
+
+        [HttpPost]
+        [Route("{userId:int}/product/{productId:int}/{quantity:int}")]
+        public IActionResult DirectPlaceOrderByUserId(int userId, int productId,int quantity)
+        {
+            try
+            {
+                var placeorder = orderRepository.DirectPlaceOrderByUserId(userId, productId, quantity);
+                return Ok(placeorder);
+
+            }
+            catch (CustomException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
     }
 

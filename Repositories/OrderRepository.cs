@@ -221,6 +221,88 @@ namespace VirtualShoppingStore.Repositories
 
         }
 
+        public OrderDT0 DirectPlaceOrderByUserId(int userId, int productId, int quantity)
+        {
+            var isValidUser = virtualShoppingStore.Users.Any(user => user.UserId == userId);
+
+            if (isValidUser == null)
+            {
+                throw new CustomException("User with this userId not found", 404);
+                //var isValidProduct = virtualShoppingStore.Products.Any(product => product.ProductId == productId);
+
+            }
+
+            var product = virtualShoppingStore.Products.FirstOrDefault(p => p.ProductId == productId);
+            if (product == null)
+            {
+                throw new CustomException($"Product with ID {productId} not found", 404);
+            }
+            if (product.StockQuantity < quantity)
+            {
+                throw new CustomException($"Not enough stock for product {product.ProductName}. Available: {product.StockQuantity}, Requested: {quantity}", 400);
+            }
+
+            var totalAmount = product.Price * quantity;
+
+            var order = new Order
+            {
+                UserId = userId,
+                OrderDate = DateTime.Now,
+                TotalAmount = totalAmount,
+                StatusId = (int)Enum.OrderStatus.Pending
+            };
+
+            virtualShoppingStore.Orders.Add(order);
+            virtualShoppingStore.SaveChanges();
+
+
+            var orderItem = new Orderitem
+            {
+                OrderId = order.OrderId,
+                ProductId = product.ProductId,
+                Quantity = quantity,
+                Price = product.Price * quantity
+            };
+            virtualShoppingStore.Orderitems.Add(orderItem);
+
+
+
+            product.StockQuantity -= quantity;
+
+            // 7. Save Changes to Database
+            virtualShoppingStore.SaveChanges();
+
+            // 8. Prepare the OrderDTO to Return
+            var orderDTO = virtualShoppingStore.Orders
+                .Where(o => o.OrderId == order.OrderId)
+                .Include(o => o.Status)
+                .Include(o => o.Orderitems)
+                .ThenInclude(oi => oi.Product)
+                .Select(o => new OrderDT0
+                {
+                    OrderId = o.OrderId,
+                    UserId = o.UserId ?? 0,
+                    OrderDate = o.OrderDate,
+                    TotalAmount = o.TotalAmount,
+                    Status = new StatusDTO
+                    {
+                        StatusId = o.Status!.StatusId,
+                        StatusName = o.Status.StatusName
+                    },
+                    OrderItems = o.Orderitems.Select(oi => new OrderItemDTO
+                    {
+                        OrderItemId = oi.OrderItemId,
+                        ProductId = oi.Product!.ProductId,
+                        ProductName = oi.Product.ProductName,
+                        Quantity = oi.Quantity,
+                        Price = oi.Price
+                    }).ToList()
+                }).FirstOrDefault();
+
+            virtualShoppingStore.SaveChanges();
+
+            return orderDTO!;
+        }
     }
 
 }
